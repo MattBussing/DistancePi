@@ -1,0 +1,16 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# run via "sudo bash rc.local"
+
+## By default this script does nothing.
+# Print the IP address
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+  echo "starting" >> /home/pi/DistancePi/log.txt
+  #starts program
+  python3 /home/pi/DistancePi/code/main.py &
+fi
+exit 0
