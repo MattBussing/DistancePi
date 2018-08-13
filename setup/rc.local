@@ -9,7 +9,8 @@
 _IP=$(hostname -I) || true
 if [ "$_IP" ]; then
   printf "My IP address is %s\n" "$_IP"
-  echo "starting" >> /home/pi/DistancePi/log.txt
+  cd /home/pi/DistancePi/
+  sudo git pull
   #starts program
   python3 /home/pi/DistancePi/code/main.py &
 fi
