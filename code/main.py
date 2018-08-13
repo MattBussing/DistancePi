@@ -21,7 +21,7 @@ def processStart(*x):
         processEnd(x)
         exit()
 
-def off(*x):
+def off(x):
     event = sense.stick.wait_for_event()
     print(event)
     if(event.direction == 'up'):
