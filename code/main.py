@@ -21,6 +21,12 @@ def processStart(*x):
         processEnd(x)
         exit()
 
+def off():
+    event = sense.stick.wait_for_event()
+    if(event == 'up'):
+        os.system('sudo shutdown -h now')
+
+
 if __name__ == '__main__':
     URL='https://distance-pi.herokuapp.com/Matt'
     morning = time(hour=9)
@@ -53,26 +59,27 @@ if __name__ == '__main__':
     # Loops until time for bed then it goes to sleep till morning
     flag = False # flags if the process stops
     try:
-        while True:
-            rn = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver")).time()
-            bedTime = not(rn < evening and rn > morning)
-            print(bedTime)
-            if(bedTime):
-                # Stops processes
-                processEnd(rep, rep2)
-
-                print("processes killed")
-                flag = True # sets flag
-                # waits 30 min
-                sleep(30*60)
-
-                if not debug:
-                    sense.clear()
-
-            elif(flag): # restarts processes if time to display
-                processStart(rep, rep2)
-
-            sleep(5)
+        # while True:
+        #     rn = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver")).time()
+        #     bedTime = not(rn < evening and rn > morning)
+        #     print(bedTime)
+        #     if(bedTime):
+        #         # Stops processes
+        #         processEnd(rep, rep2)
+        #
+        #         print("processes killed")
+        #         flag = True # sets flag
+        #         # waits 30 min
+        #         sleep(30*60)
+        #
+        #         if not debug:
+        #             sense.clear()
+        #
+        #     elif(flag): # restarts processes if time to display
+        #         processStart(rep, rep2)
+        #
+        #     sleep(5)
+        off()
 
     except KeyboardInterrupt:
         print('Keyboard exception received. Exiting.')
