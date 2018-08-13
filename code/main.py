@@ -2,7 +2,7 @@
 from time import sleep
 from messages import Messages
 from repeat import Repeat
-import sys, pytz
+import sys, pytz, os
 from datetime import datetime, time
 
 # def printTime(x):
