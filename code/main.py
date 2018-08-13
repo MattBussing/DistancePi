@@ -79,7 +79,10 @@ if __name__ == '__main__':
         #         processStart(rep, rep2)
         #
         #     sleep(5)
-        off()
+        event = sense.stick.wait_for_event()
+        print(event)
+        if(event == 'up'):
+            os.system('sudo shutdown -h now')
 
     except KeyboardInterrupt:
         print('Keyboard exception received. Exiting.')
