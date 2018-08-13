@@ -5,8 +5,8 @@ from repeat import Repeat
 import sys, pytz, os
 from datetime import datetime, time, timedelta
 
-DEBUG = False
 
+DEBUG = False
 
 # def printTime(x):
 #     print (x.strftime('%I:%M %p'))
