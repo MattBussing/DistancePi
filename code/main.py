@@ -24,7 +24,7 @@ def processStart(*x):
 def off(*x):
     event = sense.stick.wait_for_event()
     print(event)
-    if(event == 'up'):
+    if(event.direction == 'up'):
         processEnd(x)
         os.system('sudo shutdown -h now')
 
