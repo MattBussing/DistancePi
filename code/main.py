@@ -55,9 +55,10 @@ if __name__ == '__main__':
         global sense
         sense = sense_hat.SenseHat()
         rep2 = Repeat(3, m.display, sense.show_message)
-        rep3 = Repeat(3, off)
+        processes = [rep, rep2]
+        rep3 = Repeat(3, off, processes)
 
-    processes = [rep, rep2, rep3]
+    processes.add(rep3)
 
     # Starts the processes
     processStart(processes)
