@@ -8,11 +8,11 @@ from datetime import datetime, time
 # def printTime(x):
 #     print (x.strftime('%I:%M %p'))
 
-def processEnd(*x):
+def processEnd(x):
     for i in x:
         i.stop()
 
-def processStart(*x):
+def processStart(x):
     try:
         for i in x:
             i.start()
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         sense = sense_hat.SenseHat()
         rep2 = Repeat(3, m.display, sense.show_message)
 
-    processes = (rep, rep2)
+    processes = [rep, rep2]
 
     # Starts the processes
     processStart(processes)
