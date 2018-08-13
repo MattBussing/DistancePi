@@ -55,8 +55,10 @@ if __name__ == '__main__':
         sense = sense_hat.SenseHat()
         rep2 = Repeat(3, m.display, sense.show_message)
 
+    processes = [rep, rep2]
+
     # Starts the processes
-    processStart(rep, rep2)
+    processStart(processes)
 
     # Loops until time for bed then it goes to sleep till morning
     flag = False # flags if the process stops
@@ -67,7 +69,7 @@ if __name__ == '__main__':
         #     print(bedTime)
         #     if(bedTime):
         #         # Stops processes
-        #         processEnd(rep, rep2)
+        #         processEnd(processes)
         #
         #         print("processes killed")
         #         flag = True # sets flag
@@ -78,12 +80,12 @@ if __name__ == '__main__':
         #             sense.clear()
         #
         #     elif(flag): # restarts processes if time to display
-        #         processStart(rep, rep2)
+        #         processStart(processes)
         #
         #     sleep(5)
-        off(rep, rep2)
+        off(processes)
 
     except KeyboardInterrupt:
         print('Keyboard exception received. Exiting.')
-        processEnd(rep, rep2)
+        processEnd(processes)
         exit()
