@@ -57,8 +57,8 @@ if __name__ == '__main__':
         rep2 = Repeat(3, m.display, sense.show_message)
         processes = [rep, rep2]
         rep3 = Repeat(3, off, processes)
+        processes.append(rep3)
 
-    processes.add(rep3)
 
     # Starts the processes
     processStart(processes)
