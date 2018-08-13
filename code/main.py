@@ -11,7 +11,6 @@ from datetime import datetime, time
 def processEnd(*x):
     for i in x:
         i.stop()
-        i.join()
 
 def processStart(*x):
     try:
@@ -49,7 +48,7 @@ if __name__ == '__main__':
         rep2 = Repeat(3, m.display, sense.show_message)
 
     # Starts the processes
-    processStart([rep, rep2])
+    processStart(rep, rep2)
 
     # Loops until time for bed then it goes to sleep till morning
     flag = False # flags if the process stops
@@ -60,16 +59,14 @@ if __name__ == '__main__':
             print(bedTime)
             if(bedTime):
                 # Stops processes
-                rep.stop()
-                rep.join()
-                rep2.stop()
-                rep2.join()
+                processEnd(rep, rep2)
+
                 print("processes killed")
                 flag = True # sets flag
                 # waits 30 min
                 sleep(30*60)
 
-                if debug:
+                if not debug:
                     sense.clear()
 
             elif(flag): # restarts processes if time to display
@@ -79,5 +76,5 @@ if __name__ == '__main__':
 
     except KeyboardInterrupt:
         print('Keyboard exception received. Exiting.')
-        processEnd([rep, rep2])
+        processEnd(rep, rep2)
         exit()
