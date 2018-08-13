@@ -6,6 +6,14 @@ import sys, pytz
 from datetime import datetime, time
 
 
+def processStart(x, y):
+    try:
+        x.start()
+        y.start()
+    except KeyboardInterrupt:
+        print('Keyboard exception received. Exiting.')
+        exit()
+
 if __name__ == '__main__':
     URL='https://distance-pi.herokuapp.com/Matt'
     morning = time(hour=9)
@@ -62,12 +70,3 @@ if __name__ == '__main__':
 
 # def printTime(x):
 #     print (x.strftime('%I:%M %p'))
-
-
-def processStart(x, y):
-    try:
-        x.start()
-        y.start()
-    except KeyboardInterrupt:
-        print('Keyboard exception received. Exiting.')
-        exit()
