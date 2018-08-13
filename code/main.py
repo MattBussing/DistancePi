@@ -1,12 +1,15 @@
 # author Matt Bussing
+import sys
+import os
 from time import sleep
+from datetime import datetime, time
+
+import pytz
+
 from messages import Messages
 from repeat import Repeat
-import sys, pytz, os
-from datetime import datetime, time, timedelta
 
 
-DEBUG = False
 
 # def printTime(x):
 #     print (x.strftime('%I:%M %p'))
@@ -37,22 +40,23 @@ def off(x):
         sense.clear()
         os.system('sudo shutdown -h now')
 
-
-if __name__ == '__main__':
-    GET='/Matt'
+def main( arg, test=False):
+    CLIENT='/Matt'
     URL='https://distance-pi.herokuapp.com'
     # This is the time that we want the pi on
     # TODO make the times part of config file
     morning = time(hour=9)
     evening = time(hour=21)
+    expirationDate = 48 * 60 * 60 # hr * min/hr * sec/min
+    DEBUG = False
 
-    for i in sys.argv[1:]:
+    for i in arg:
         if(i in "-d"):
             DEBUG = True
             # TODO make the name part of config file
             URL='http://127.0.0.1:5000'
 
-    m = Messages(URL, GET)
+    m = Messages(URL, CLIENT, expirationDate )
 
     # This is the process that updates the messages
     rep = Repeat(30, m.getMessages)
@@ -78,6 +82,7 @@ if __name__ == '__main__':
     # Loops until time for bed then it goes to sleep till morning
     flag = False # flags if the process stops
     try:
+        intTemp = 0
         while True:
             currentDay = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver"))
             # ##### testing
@@ -96,7 +101,16 @@ if __name__ == '__main__':
                 temp = 0
                 if currentDay >= eveningD:
                     temp =1
-                morningDate = datetime(currentDay.year, currentDay.month, currentDay.day+temp,  hour=morning.hour, minute=morning.minute, second=morning.second, microsecond=morning.microsecond).astimezone(pytz.timezone("America/Denver"))
+
+                morningDate = datetime(currentDay.year,
+                    currentDay.month,
+                    currentDay.day+temp,
+                    hour=morning.hour,
+                    minute=morning.minute,
+                    second=morning.second,
+                    microsecond=morning.microsecond
+                ).astimezone(pytz.timezone("America/Denver"))
+
                 diff = morningDate - currentDay
                 print("going to sleep", diff.total_seconds(), diff)
                 # waits until morning
@@ -106,8 +120,17 @@ if __name__ == '__main__':
                 processStart(processes)
 
             sleep(5)
+            if test:
+                intTemp += 1
+
+            if intTemp > 5:
+                return 'success'
 
     except KeyboardInterrupt:
         print('KeyboardInterrupt received. Exiting.')
         processEnd(processes)
         exit()
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
