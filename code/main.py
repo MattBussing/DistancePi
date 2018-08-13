@@ -26,6 +26,7 @@ def off(x):
     print(event)
     if(event.direction == 'up'):
         processEnd(x)
+        sense.clear()
         os.system('sudo shutdown -h now')
 
 
