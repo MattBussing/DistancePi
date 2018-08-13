@@ -33,8 +33,7 @@ if __name__ == '__main__':
         rep2 = Repeat(3, m.display, sense.show_message)
 
     # Starts the processes
-    rep.start()
-    rep2.start()
+    processStart(rep, rep2)
 
     # Loops until time for bed then it goes to sleep till morning
     flag = False # flags if the process stops
@@ -57,10 +56,18 @@ if __name__ == '__main__':
                 sense.clear()
 
         elif(flag): # restarts processes if time to display
-            rep.start()
-            rep2.start()
+            processStart(rep, rep2)
 
         sleep(5)
 
 # def printTime(x):
 #     print (x.strftime('%I:%M %p'))
+
+
+def processStart(x, y):
+    try:
+        x.start()
+        y.start()
+    except KeyboardInterrupt:
+        print('Keyboard exception received. Exiting.')
+        exit()
