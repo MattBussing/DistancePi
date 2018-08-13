@@ -26,36 +26,40 @@ def off(x):
     print(event)
     if(event.direction == 'up'):
         processEnd(x)
+        sense.show_message("shutting down")
         sense.clear()
         os.system('sudo shutdown -h now')
 
 
 if __name__ == '__main__':
     URL='https://distance-pi.herokuapp.com/Matt'
+    # This is the time that we want the pi on
     morning = time(hour=9)
     evening = time(hour=21)
+
     debug = False
 
     for i in sys.argv[1:]:
         if(i in "-d"):
             debug = True
-            # URL='http://127.0.0.1:5000/Matt'
+            URL='http://127.0.0.1:5000/Matt'
 
     m = Messages(URL)
 
     # This is the process that updates the messages
     rep = Repeat(30, m.getMessages)
-
+    processes = [rep]
     # This is the process that displays the information
     if debug:
         print("debug mode")
         rep2 = Repeat(3, m.display, print)
+        processes.append(rep2)
     else:
         import sense_hat
         global sense
         sense = sense_hat.SenseHat()
         rep2 = Repeat(3, m.display, sense.show_message)
-        processes = [rep, rep2]
+        processes.append(rep2)
         rep3 = Repeat(3, off, x=processes)
         processes.append(rep3)
 
@@ -68,9 +72,7 @@ if __name__ == '__main__':
     try:
         while True:
             rn = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver")).time()
-            bedTime = not(rn < evening and rn > morning)
-            print(bedTime)
-            if(bedTime):
+            if( not(rn < evening and rn > morning)): # This checks to see if we want to display rn
                 # Stops processes
                 processEnd(processes)
 
