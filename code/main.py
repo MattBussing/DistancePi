@@ -3,7 +3,10 @@ from time import sleep
 from messages import Messages
 from repeat import Repeat
 import sys, pytz, os
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
+
+DEBUG = False
+
 
 # def printTime(x):
 #     print (x.strftime('%I:%M %p'))
@@ -11,6 +14,10 @@ from datetime import datetime, time
 def processEnd(x):
     for i in x:
         i.stop()
+    if not DEBUG:
+        sense.clear()
+    print("processes killed")
+
 
 def processStart(x):
     try:
@@ -37,11 +44,9 @@ if __name__ == '__main__':
     morning = time(hour=9)
     evening = time(hour=21)
 
-    debug = False
-
     for i in sys.argv[1:]:
         if(i in "-d"):
-            debug = True
+            DEBUG = True
             URL='http://127.0.0.1:5000/Matt'
 
     m = Messages(URL)
@@ -50,8 +55,8 @@ if __name__ == '__main__':
     rep = Repeat(30, m.getMessages)
     processes = [rep]
     # This is the process that displays the information
-    if debug:
-        print("debug mode")
+    if DEBUG:
+        print("Debug mode")
         rep2 = Repeat(3, m.display, print)
         processes.append(rep2)
     else:
@@ -71,18 +76,28 @@ if __name__ == '__main__':
     flag = False # flags if the process stops
     try:
         while True:
-            rn = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver")).time()
+            currentDay = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver"))
+            # ##### testing
+            # early = time(hour=8)
+            # early = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=early.hour, minute=early.minute, second=early.second, microsecond=early.microsecond).astimezone(pytz.timezone("America/Denver"))
+            # currentDay = early
+            # eveningD = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=evening.hour, minute=evening.minute, second=evening.second, microsecond=evening.microsecond).astimezone(pytz.timezone("America/Denver"))
+            # ######
+            rn = currentDay.time()
+
             if( not(rn < evening and rn > morning)): # This checks to see if we want to display rn
                 # Stops processes
                 processEnd(processes)
-
-                print("processes killed")
                 flag = True # sets flag
-                # waits 30 min
-                sleep(30*60)
 
-                if not debug:
-                    sense.clear()
+                temp = 0
+                if currentDay >= eveningD:
+                    temp =1
+                morningDate = datetime(currentDay.year, currentDay.month, currentDay.day+temp,  hour=morning.hour, minute=morning.minute, second=morning.second, microsecond=morning.microsecond).astimezone(pytz.timezone("America/Denver"))
+                diff = morningDate - currentDay
+                print("going to sleep", diff.total_seconds(), diff)
+                # waits until morning
+                sleep(diff.total_seconds())
 
             elif(flag): # restarts processes if time to display
                 processStart(processes)
@@ -90,6 +105,6 @@ if __name__ == '__main__':
             sleep(5)
 
     except KeyboardInterrupt:
-        print('Keyboard exception received. Exiting.')
+        print('KeyboardInterrupt received. Exiting.')
         processEnd(processes)
         exit()
