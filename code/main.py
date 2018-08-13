@@ -1,5 +1,4 @@
 # author Matt Bussing
-from time import sleep
 from messages import Messages
 from repeat import Repeat
 import sys
@@ -14,9 +13,9 @@ if __name__ == '__main__':
             debug = True
             URL='http://127.0.0.1:5000/Matt'
 
-
     m = Messages(URL)
     rep = Repeat(30, m.getMessages)
+
     if debug:
         print("debug mode")
         rep2 = Repeat(3, m.display, print)
@@ -35,3 +34,7 @@ if __name__ == '__main__':
     rep.join()
     rep2.stop()
     rep2.join()
+
+
+# def printTime(x):
+#     print (x.strftime('%I:%M %p'))
