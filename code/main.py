@@ -56,7 +56,7 @@ if __name__ == '__main__':
         sense = sense_hat.SenseHat()
         rep2 = Repeat(3, m.display, sense.show_message)
         processes = [rep, rep2]
-        rep3 = Repeat(3, off, processes)
+        rep3 = Repeat(3, off, x=processes)
         processes.append(rep3)
 
 
