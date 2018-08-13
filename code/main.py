@@ -5,13 +5,21 @@ from repeat import Repeat
 import sys, pytz
 from datetime import datetime, time
 
+# def printTime(x):
+#     print (x.strftime('%I:%M %p'))
 
-def processStart(x, y):
+def processEnd(*x):
+    for i in x:
+        i.stop()
+        i.join()
+
+def processStart(*x):
     try:
-        x.start()
-        y.start()
+        for i in x:
+            i.start()
     except KeyboardInterrupt:
         print('Keyboard exception received. Exiting.')
+        processEnd(x)
         exit()
 
 if __name__ == '__main__':
@@ -41,32 +49,35 @@ if __name__ == '__main__':
         rep2 = Repeat(3, m.display, sense.show_message)
 
     # Starts the processes
-    processStart(rep, rep2)
+    processStart([rep, rep2])
 
     # Loops until time for bed then it goes to sleep till morning
     flag = False # flags if the process stops
-    while True:
-        rn = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver")).time()
-        bedTime = not(rn < evening and rn > morning)
-        print(bedTime)
-        if(bedTime):
-            # Stops processes
-            rep.stop()
-            rep.join()
-            rep2.stop()
-            rep2.join()
-            print("processes killed")
-            flag = True # sets flag
-            # waits 30 min
-            sleep(30*60)
+    try:
+        while True:
+            rn = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver")).time()
+            bedTime = not(rn < evening and rn > morning)
+            print(bedTime)
+            if(bedTime):
+                # Stops processes
+                rep.stop()
+                rep.join()
+                rep2.stop()
+                rep2.join()
+                print("processes killed")
+                flag = True # sets flag
+                # waits 30 min
+                sleep(30*60)
 
-            if debug:
-                sense.clear()
+                if debug:
+                    sense.clear()
 
-        elif(flag): # restarts processes if time to display
-            processStart(rep, rep2)
+            elif(flag): # restarts processes if time to display
+                processStart(rep, rep2)
 
-        sleep(5)
+            sleep(5)
 
-# def printTime(x):
-#     print (x.strftime('%I:%M %p'))
+    except KeyboardInterrupt:
+        print('Keyboard exception received. Exiting.')
+        processEnd([rep, rep2])
+        exit()
