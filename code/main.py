@@ -4,14 +4,19 @@ from messages import Messages
 from repeat import Repeat
 import sys
 
+URL='https://distance-pi.herokuapp.com/Matt'
+
+
 if __name__ == '__main__':
     debug = False
     for i in sys.argv[1:]:
         if(i in "-d"):
             debug = True
+            URL='http://127.0.0.1:5000/Matt'
 
-    m = Messages()
-    rep = Repeat(30, m.updateMessage)
+
+    m = Messages(URL)
+    rep = Repeat(30, m.getMessages)
     if debug:
         print("debug mode")
         rep2 = Repeat(3, m.display, print)

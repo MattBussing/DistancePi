@@ -1,15 +1,24 @@
 import requests
-class Messages():
-    def __init__(self):
-        self.message = "Message not updated yet"
 
-    def updateMessage(self):
+class Messages():
+    def __init__(self, url):
+        # Stores a list of messages
+        self.messageList = ["Message not updated yet"]
+        self.url = url
+
+    def getMessages(self):
         print("getting message")
-        r = requests.get(url='https://distance-pi.herokuapp.com/pi/Matt')
+        r = requests.get(url = self.url)
+
         if(r.status_code == 200):
-            self.message = r.json()['item']['message']
+            mList = r.json()['messages']
+            if mList[0] == 'none':
+                self.messageList = [ 'no new messages' ]
+            else:
+                self.messageList = [ i['message'] for i in mList ]
         else:
-            self.message = "Server not working properly"
+            self.messageList = ["Server not working properly"]
 
     def display(self, displayFunction):
-        displayFunction(self.message)
+        for i in self.messageList:
+            displayFunction(i)
