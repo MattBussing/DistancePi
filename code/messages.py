@@ -1,14 +1,15 @@
 import requests
 
 class Messages():
-    def __init__(self, url):
+    def __init__(self, url, get):
         # Stores a list of messages
         self.messageList = ["Message not updated yet"]
         self.url = url
+        self.get = get
 
     def getMessages(self):
         print("getting message")
-        r = requests.get(url = self.url)
+        r = requests.get(url = self.url + self.get)
 
         if(r.status_code == 200):
             mList = r.json()['messages']

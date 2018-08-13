@@ -39,17 +39,20 @@ def off(x):
 
 
 if __name__ == '__main__':
-    URL='https://distance-pi.herokuapp.com/Matt'
+    GET='/Matt'
+    URL='https://distance-pi.herokuapp.com'
     # This is the time that we want the pi on
+    # TODO make the times part of config file
     morning = time(hour=9)
     evening = time(hour=21)
 
     for i in sys.argv[1:]:
         if(i in "-d"):
             DEBUG = True
-            URL='http://127.0.0.1:5000/Matt'
+            # TODO make the name part of config file
+            URL='http://127.0.0.1:5000'
 
-    m = Messages(URL)
+    m = Messages(URL, GET)
 
     # This is the process that updates the messages
     rep = Repeat(30, m.getMessages)
