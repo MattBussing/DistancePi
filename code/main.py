@@ -55,8 +55,9 @@ if __name__ == '__main__':
         global sense
         sense = sense_hat.SenseHat()
         rep2 = Repeat(3, m.display, sense.show_message)
+        rep3 = Repeat(3, off)
 
-    processes = [rep, rep2]
+    processes = [rep, rep2, rep3]
 
     # Starts the processes
     processStart(processes)
@@ -64,27 +65,26 @@ if __name__ == '__main__':
     # Loops until time for bed then it goes to sleep till morning
     flag = False # flags if the process stops
     try:
-        # while True:
-        #     rn = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver")).time()
-        #     bedTime = not(rn < evening and rn > morning)
-        #     print(bedTime)
-        #     if(bedTime):
-        #         # Stops processes
-        #         processEnd(processes)
-        #
-        #         print("processes killed")
-        #         flag = True # sets flag
-        #         # waits 30 min
-        #         sleep(30*60)
-        #
-        #         if not debug:
-        #             sense.clear()
-        #
-        #     elif(flag): # restarts processes if time to display
-        #         processStart(processes)
-        #
-        #     sleep(5)
-        off(processes)
+        while True:
+            rn = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver")).time()
+            bedTime = not(rn < evening and rn > morning)
+            print(bedTime)
+            if(bedTime):
+                # Stops processes
+                processEnd(processes)
+
+                print("processes killed")
+                flag = True # sets flag
+                # waits 30 min
+                sleep(30*60)
+
+                if not debug:
+                    sense.clear()
+
+            elif(flag): # restarts processes if time to display
+                processStart(processes)
+
+            sleep(5)
 
     except KeyboardInterrupt:
         print('Keyboard exception received. Exiting.')
