@@ -18,7 +18,8 @@ URL='https://distance-pi.herokuapp.com'
 def processEnd(x):
     for i in x:
         i.stop()
-    if DEBUG:
+    if not DEBUG:
+        global sense
         sense.clear()
     print("processes killed")
 
@@ -27,6 +28,7 @@ def processStart(x):
         i.start()
 
 def off(x):
+    global sense
     event = sense.stick.wait_for_event()
     print(event)
     if(event.direction == 'up'):
