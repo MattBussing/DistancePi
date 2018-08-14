@@ -72,7 +72,7 @@ def main( arg, test=False):
         sense = sense_hat.SenseHat()
         rep2 = Repeat(3, m.display, sense.show_message)
         processes.append(rep2)
-        rep3 = Repeat(3, off, x=processes)
+        rep3 = Repeat(3, off, processes)
         processes.append(rep3)
 
 
