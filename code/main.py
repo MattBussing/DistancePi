@@ -56,7 +56,7 @@ def main( arg, test=False):
     # TODO make the times part of config file
     morning = time(hour=9)
     evening = time(hour=21)
-    currentDay = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver"))
+    currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
     eveningD = datetime(currentDay.year,
         currentDay.month,
         currentDay.day,
@@ -117,7 +117,7 @@ def main( arg, test=False):
     flag = False # flags if the process stops
     try:
         while True:
-            currentDay = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver"))
+            currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
             # ##### testing
             # early = time(hour=8)
             # early = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=early.hour, minute=early.minute, second=early.second, microsecond=early.microsecond).astimezone(pytz.timezone("America/Denver"))
@@ -150,6 +150,8 @@ def main( arg, test=False):
 
             elif(flag): # restarts processes if time to display
                 processStart(processes)
+
+            sleep(5)# pauses for 5 seconds
 
     except KeyboardInterrupt:
         print('KeyboardInterrupt received. Exiting.')
