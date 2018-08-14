@@ -11,6 +11,7 @@ from messages import Messages
 from my_threads import Repeat, myThread
 
 DEBUG = False
+SLEEP = True
 CLIENT='/Matt'
 URL='http://127.0.0.1:5000'
 
@@ -43,7 +44,9 @@ def deleteMessage(m):
     return requests.delete(url=URL+CLIENT, json={'message':m})
 
 def postMessage(postData):
-    return requests.post(url=URL, json=postData)
+    r = requests.post(url=URL, json=postData)
+    print (r)
+    return r
 
 
 def main( arg, test=False):
@@ -68,12 +71,16 @@ def main( arg, test=False):
             messageList = [ 'lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
             for i in messageList:
                 temp = myThread(postMessage, postData= {'message':i, '_to':'Matt'} )
-                temp.start()
+                print(temp.start())
 
         elif(i in "-e"): # This sets up test data
             print('setting small expiration date for database entries')
             expirationDate = 5*60
 
+        elif(i in "-s"): # This sets up test data
+            print('setting sleep variable off')
+            global SLEEP
+            SLEEP = False
 
     m = Messages(URL, CLIENT, expirationDate )
 
@@ -90,9 +97,8 @@ def main( arg, test=False):
         sense = sense_hat.SenseHat()
         rep2 = Repeat(3, m.display, sense.show_message)
         processes.append(rep2)
-        rep3 = Repeat(3, off, processes)
-        processes.append(rep3)
-
+        shutdownProcess = myThread(off, processes)
+        shutdownProcess.start()
 
     # Starts the processes
     processStart(processes)
@@ -100,33 +106,35 @@ def main( arg, test=False):
     # Loops until time for bed then it goes to sleep till morning
     flag = False # flags if the process stops
     try:
-        intTemp = 0
         while True:
             currentDay = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver"))
+            # ##### testing
+            # early = time(hour=8)
+            # early = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=early.hour, minute=early.minute, second=early.second, microsecond=early.microsecond).astimezone(pytz.timezone("America/Denver"))
+            # currentDay = early
+            # eveningD = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=evening.hour, minute=evening.minute, second=evening.second, microsecond=evening.microsecond).astimezone(pytz.timezone("America/Denver"))
+            # ######
             rn = currentDay.time()
-
-            if( not(rn < evening and rn > morning)): # This checks to see if we want to display rn
+            global SLEEP
+            if( not(rn < evening and rn > morning) and SLEEP): # This checks to see if we want to display rn
                 # Stops processes
                 processEnd(processes)
                 flag = True # sets flag
 
-                temp = 0
-                if currentDay >= evening:
-                    temp =1
+                if rn >= evening:
+                    morningDate = datetime(currentDay.year,
+                        currentDay.month,
+                        currentDay.day+temp,
+                        hour=morning.hour,
+                        minute=morning.minute,
+                        second=morning.second,
+                        microsecond=morning.microsecond
+                    ).astimezone(pytz.timezone("America/Denver"))
 
-                morningDate = datetime(currentDay.year,
-                    currentDay.month,
-                    currentDay.day+temp,
-                    hour=morning.hour,
-                    minute=morning.minute,
-                    second=morning.second,
-                    microsecond=morning.microsecond
-                ).astimezone(pytz.timezone("America/Denver"))
-
-                diff = morningDate - currentDay
-                print("going to sleep", diff.total_seconds(), diff)
-                # waits until morning
-                sleep(diff.total_seconds())
+                    diff = morningDate - currentDay
+                    print("going to sleep", diff.total_seconds(), diff)
+                    # waits until morning
+                    sleep(diff.total_seconds())
 
             elif(flag): # restarts processes if time to display
                 processStart(processes)
