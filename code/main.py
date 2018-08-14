@@ -61,6 +61,16 @@ def main( arg, test=False):
     # TODO make the times part of config file
     morning = time(hour=9)
     evening = time(hour=21)
+    currentDay = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver"))
+    eveningD = datetime(currentDay.year,
+        currentDay.month,
+        currentDay.day,
+        hour=evening.hour,
+        minute=evening.minute,
+        second=evening.second,
+        microsecond=evening.microsecond,
+        tzinfo = pytz.timezone("America/Denver")
+    )
     expirationDate = 48 * 60 * 60 # hr * min/hr * sec/min
 
     for i in arg:
@@ -76,7 +86,8 @@ def main( arg, test=False):
             print('uploading test data')
             messageList = [ 'lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
             for i in messageList:
-                temp = myThread(postMessage, postData= {'message':i, '_to':'Matt'} )
+                postProcess = myThread(postMessage, postData= {'message':i, '_to':'Matt'} )
+                postProcess.start()
 
         elif(i in "-e"): # This sets up test data
             print('setting small expiration date for database entries')
@@ -112,7 +123,6 @@ def main( arg, test=False):
     try:
         while True:
             currentDay = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver"))
-            eveningD = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=evening.hour, minute=evening.minute, second=evening.second, microsecond=evening.microsecond).astimezone(pytz.timezone("America/Denver"))
             # ##### testing
             # early = time(hour=8)
             # early = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=early.hour, minute=early.minute, second=early.second, microsecond=early.microsecond).astimezone(pytz.timezone("America/Denver"))
@@ -134,8 +144,9 @@ def main( arg, test=False):
                     hour=morning.hour,
                     minute=morning.minute,
                     second=morning.second,
-                    microsecond=morning.microsecond
-                ).astimezone(pytz.timezone("America/Denver"))
+                    microsecond=morning.microsecond,
+                    tzinfo = pytz.timezone("America/Denver")
+                )
 
                 diff = morningDate - currentDay
                 print("going to sleep", diff.total_seconds(), diff)
