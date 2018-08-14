@@ -13,7 +13,7 @@ from my_threads import Repeat, myThread
 DEBUG = False
 SLEEP = True
 CLIENT='/Matt'
-URL='http://127.0.0.1:5000'
+URL='https://distance-pi.herokuapp.com'
 
 def processEnd(x):
     for i in x:
@@ -23,13 +23,8 @@ def processEnd(x):
     print("processes killed")
 
 def processStart(x):
-    try:
-        for i in x:
-            i.start()
-    except KeyboardInterrupt:
-        print('Keyboard exception received. Exiting.')
-        processEnd(x)
-        exit()
+    for i in x:
+        i.start()
 
 def off(x):
     event = sense.stick.wait_for_event()
@@ -74,26 +69,26 @@ def main( arg, test=False):
     expirationDate = 48 * 60 * 60 # hr * min/hr * sec/min
 
     for i in arg:
-        if(i in "-d"):
+        if(i == "-d"):
             print('Entering Debug mode')
             DEBUG = True
 
-        elif(i in "-l"):  # makes server local
+        elif(i == "-l"):  # makes server local
             print('using local server')
             URL='http://127.0.0.1:5000'
 
-        elif(i in "-u"): # This sets up test data
+        elif(i == "-u"): # This sets up test data
             print('uploading test data')
             messageList = [ 'lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
             for i in messageList:
                 postProcess = myThread(postMessage, postData= {'message':i, '_to':'Matt'} )
                 postProcess.start()
 
-        elif(i in "-e"): # This sets up test data
+        elif(i == "-e"): # This sets up test data
             print('setting small expiration date for database entries')
             expirationDate = 5*60
 
-        elif(i in "-s"): # This sets up test data
+        elif(i == "-s"): # This sets up test data
             print('setting sleep variable off')
             SLEEP = False
 
