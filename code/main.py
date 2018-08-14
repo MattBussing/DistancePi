@@ -11,10 +11,8 @@ from messages import Messages
 from my_threads import Repeat, myThread
 
 DEBUG = False
-global SLEEP
 SLEEP = True
 CLIENT='/Matt'
-global URL
 URL='http://127.0.0.1:5000'
 
 def processEnd(x):
@@ -43,15 +41,22 @@ def off(x):
         os.system('sudo shutdown -h now')
 
 def deleteMessage(m):
+    global CLIENT
+    global URL
     return requests.delete(url=URL+CLIENT, json={'message':m})
 
 def postMessage(postData):
+    global URL
     r = requests.post(url=URL, json=postData)
     print (r)
     return r
 
 
 def main( arg, test=False):
+    global SLEEP
+    global URL
+    global CLIENT
+    global DEBUG
     # This is the time that we want the pi on
     # TODO make the times part of config file
     morning = time(hour=9)
