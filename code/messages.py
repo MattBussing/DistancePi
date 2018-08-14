@@ -16,7 +16,6 @@ class Messages():
         print("getting messages")
         r = requests.get(url = self.url + self.client)
 
-
         if(r.status_code == 200):
             # emptys the list
             self.messageList = []
@@ -29,6 +28,8 @@ class Messages():
 
                     diff = datetime.now(tz=pytz.utc) - postDate #finds difference between when the item was posted and rn
 
+                    # # DEBUG: this print statement is only for debugging
+                    print(diff.total_seconds(), self.expirationDate)
                     # deletes the message if it is too old and continues
                     if diff.total_seconds() > self.expirationDate:
                         self.DeleteMessages(i['message'])

@@ -8,15 +8,16 @@ import pytz
 import requests
 
 from messages import Messages
-from repeat import Repeat
+from my_threads import Repeat, myThread
 
+DEBUG = False
 CLIENT='/Matt'
-URL='https://distance-pi.herokuapp.com'
+URL='http://127.0.0.1:5000'
 
 def processEnd(x):
     for i in x:
         i.stop()
-    if not DEBUG:
+    if DEBUG:
         sense.clear()
     print("processes killed")
 
@@ -51,7 +52,6 @@ def main( arg, test=False):
     morning = time(hour=9)
     evening = time(hour=21)
     expirationDate = 48 * 60 * 60 # hr * min/hr * sec/min
-    DEBUG = False
 
     for i in arg:
         if(i in "-d"):
@@ -66,9 +66,9 @@ def main( arg, test=False):
         elif(i in "-u"): # This sets up test data
             print('uploading test data')
             messageList = [ 'lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
-            print('updating messages')
             for i in messageList:
-                print(postMessage(postData= {'message':i, '_to':'Matt'}))
+                temp = myThread(postMessage, postData= {'message':i, '_to':'Matt'} )
+                temp.start()
 
         elif(i in "-e"): # This sets up test data
             print('setting small expiration date for database entries')
@@ -82,7 +82,6 @@ def main( arg, test=False):
     processes = [rep]
     # This is the process that displays the information
     if DEBUG:
-        print("Debug mode")
         rep2 = Repeat(3, m.display, print)
         processes.append(rep2)
     else:
@@ -104,12 +103,6 @@ def main( arg, test=False):
         intTemp = 0
         while True:
             currentDay = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver"))
-            # ##### testing
-            # early = time(hour=8)
-            # early = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=early.hour, minute=early.minute, second=early.second, microsecond=early.microsecond).astimezone(pytz.timezone("America/Denver"))
-            # currentDay = early
-            # eveningD = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=evening.hour, minute=evening.minute, second=evening.second, microsecond=evening.microsecond).astimezone(pytz.timezone("America/Denver"))
-            # ######
             rn = currentDay.time()
 
             if( not(rn < evening and rn > morning)): # This checks to see if we want to display rn
@@ -118,7 +111,7 @@ def main( arg, test=False):
                 flag = True # sets flag
 
                 temp = 0
-                if currentDay >= eveningD:
+                if currentDay >= evening:
                     temp =1
 
                 morningDate = datetime(currentDay.year,
@@ -137,13 +130,6 @@ def main( arg, test=False):
 
             elif(flag): # restarts processes if time to display
                 processStart(processes)
-
-            sleep(5)
-            if test:
-                intTemp += 1
-
-            if intTemp > 5:
-                return 'success'
 
     except KeyboardInterrupt:
         print('KeyboardInterrupt received. Exiting.')
