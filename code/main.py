@@ -5,14 +5,13 @@ from time import sleep
 from datetime import datetime, time
 
 import pytz
+import requests
 
 from messages import Messages
 from repeat import Repeat
 
-
-
-# def printTime(x):
-#     print (x.strftime('%I:%M %p'))
+CLIENT='/Matt'
+URL='https://distance-pi.herokuapp.com'
 
 def processEnd(x):
     for i in x:
@@ -20,7 +19,6 @@ def processEnd(x):
     if not DEBUG:
         sense.clear()
     print("processes killed")
-
 
 def processStart(x):
     try:
@@ -40,9 +38,14 @@ def off(x):
         sense.clear()
         os.system('sudo shutdown -h now')
 
+def deleteMessage(m):
+    return requests.delete(url=URL+CLIENT, json={'message':m})
+
+def postMessage(postData):
+    return requests.post(url=URL, json=postData)
+
+
 def main( arg, test=False):
-    CLIENT='/Matt'
-    URL='https://distance-pi.herokuapp.com'
     # This is the time that we want the pi on
     # TODO make the times part of config file
     morning = time(hour=9)
@@ -52,10 +55,24 @@ def main( arg, test=False):
 
     for i in arg:
         if(i in "-d"):
+            print('Entering Debug mode')
             DEBUG = True
-            # TODO make the name part of config file
+
+        elif(i in "-l"):  # makes server local
+            print('using local server')
+            global URL
             URL='http://127.0.0.1:5000'
-            expirationDate = 5*60  
+
+        elif(i in "-u"): # This sets up test data
+            print('uploading test data')
+            messageList = [ 'lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
+            print('updating messages')
+            for i in messageList:
+                print(postMessage(postData= {'message':i, '_to':'Matt'}))
+
+        elif(i in "-e"): # This sets up test data
+            print('setting small expiration date for database entries')
+            expirationDate = 5*60
 
 
     m = Messages(URL, CLIENT, expirationDate )

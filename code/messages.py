@@ -13,32 +13,36 @@ class Messages():
         self.expirationDate = expirationDate
 
     def getMessages(self):
-        print("getting message")
+        print("getting messages")
         r = requests.get(url = self.url + self.client)
 
+
         if(r.status_code == 200):
+            # emptys the list
             self.messageList = []
-
             mList = r.json()['messages']
-            if not(mList[0] == 'none'):
+            if not(mList[0] == 'none'): #checks to see if anything passed
                 for i in mList:
-                    local_tz = pytz.timezone("America/Denver")
+                    # returns the json string of date / time as a datetime object with timezone
                     postDate = datetime.strptime(i['dateTime'], "%Y-%m-%dT%H:%M:%S.%f") #2018-08-13T13:35:58.078103
-                    postDate = local_tz.localize(postDate)
-                    diff = datetime.now(tz=pytz.utc).astimezone(local_tz) - postDate
-                    print(diff.total_seconds() , self.expirationDate)
+                    postDate = pytz.utc.localize(postDate, is_dst=None)
 
+                    diff = datetime.now(tz=pytz.utc) - postDate #finds difference between when the item was posted and rn
+
+                    # deletes the message if it is too old and continues
                     if diff.total_seconds() > self.expirationDate:
                         self.DeleteMessages(i['message'])
                         continue
 
+                    # if it's not deleted, the message is added to the list
                     self.messageList.append(i['message'])
+
 
         else:
             self.messageList = ["Server not working properly"]
 
-        if len(self.messageList):
-            self.messageList = [ 'no new messages' ]
+        if len(self.messageList) == 0:
+            self.messageList.append('no new messages')
 
     def DeleteMessages(self, message):
         print("Deleting old message")
