@@ -11,8 +11,10 @@ from messages import Messages
 from my_threads import Repeat, myThread
 
 DEBUG = False
+global SLEEP
 SLEEP = True
 CLIENT='/Matt'
+global URL
 URL='http://127.0.0.1:5000'
 
 def processEnd(x):
@@ -63,7 +65,6 @@ def main( arg, test=False):
 
         elif(i in "-l"):  # makes server local
             print('using local server')
-            global URL
             URL='http://127.0.0.1:5000'
 
         elif(i in "-u"): # This sets up test data
@@ -71,7 +72,6 @@ def main( arg, test=False):
             messageList = [ 'lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
             for i in messageList:
                 temp = myThread(postMessage, postData= {'message':i, '_to':'Matt'} )
-                print(temp.start())
 
         elif(i in "-e"): # This sets up test data
             print('setting small expiration date for database entries')
@@ -79,7 +79,6 @@ def main( arg, test=False):
 
         elif(i in "-s"): # This sets up test data
             print('setting sleep variable off')
-            global SLEEP
             SLEEP = False
 
     m = Messages(URL, CLIENT, expirationDate )
@@ -108,33 +107,35 @@ def main( arg, test=False):
     try:
         while True:
             currentDay = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver"))
+            eveningD = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=evening.hour, minute=evening.minute, second=evening.second, microsecond=evening.microsecond).astimezone(pytz.timezone("America/Denver"))
             # ##### testing
             # early = time(hour=8)
             # early = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=early.hour, minute=early.minute, second=early.second, microsecond=early.microsecond).astimezone(pytz.timezone("America/Denver"))
             # currentDay = early
-            # eveningD = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=evening.hour, minute=evening.minute, second=evening.second, microsecond=evening.microsecond).astimezone(pytz.timezone("America/Denver"))
             # ######
             rn = currentDay.time()
-            global SLEEP
             if( not(rn < evening and rn > morning) and SLEEP): # This checks to see if we want to display rn
                 # Stops processes
                 processEnd(processes)
                 flag = True # sets flag
 
-                if rn >= evening:
-                    morningDate = datetime(currentDay.year,
-                        currentDay.month,
-                        currentDay.day+temp,
-                        hour=morning.hour,
-                        minute=morning.minute,
-                        second=morning.second,
-                        microsecond=morning.microsecond
-                    ).astimezone(pytz.timezone("America/Denver"))
+                temp = 0
+                if currentDay >= eveningD:
+                    temp =1
 
-                    diff = morningDate - currentDay
-                    print("going to sleep", diff.total_seconds(), diff)
-                    # waits until morning
-                    sleep(diff.total_seconds())
+                morningDate = datetime(currentDay.year,
+                    currentDay.month,
+                    currentDay.day+temp,
+                    hour=morning.hour,
+                    minute=morning.minute,
+                    second=morning.second,
+                    microsecond=morning.microsecond
+                ).astimezone(pytz.timezone("America/Denver"))
+
+                diff = morningDate - currentDay
+                print("going to sleep", diff.total_seconds(), diff)
+                # waits until morning
+                sleep(diff.total_seconds())
 
             elif(flag): # restarts processes if time to display
                 processStart(processes)
