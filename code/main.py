@@ -55,6 +55,8 @@ def main( arg, test=False):
             DEBUG = True
             # TODO make the name part of config file
             URL='http://127.0.0.1:5000'
+            expirationDate = 5*60  
+
 
     m = Messages(URL, CLIENT, expirationDate )
 

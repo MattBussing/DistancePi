@@ -17,21 +17,26 @@ class Messages():
         r = requests.get(url = self.url + self.client)
 
         if(r.status_code == 200):
-            mList = r.json()['messages']
-            if mList[0] == 'none':
-                self.messageList = [ 'no new messages' ]
-            else:
-                self.messageList = []
-                for i in mList:
-                    lol = datetime.strptime(i['dateTime'], "%Y-%m-%dT%H:%M:%S.%f").astimezone(pytz.timezone("America/Denver")) #2018-08-13T13:35:58.078103
-                    diff = datetime.now(tz=pytz.utc).astimezone(pytz.timezone("America/Denver")) - lol
-                    print(diff.total_seconds() , self.expirationDate)
-                    if diff.total_seconds() > self.expirationDate:
-                        self.DeleteMessages(i['message'])
-                        continue
-                    self.messageList.append(i['message'])
+            self.messageList = []
+
+            for i in r.json()['messages']:
+                local_tz = pytz.timezone("America/Denver")
+                postDate = datetime.strptime(i['dateTime'], "%Y-%m-%dT%H:%M:%S.%f") #2018-08-13T13:35:58.078103
+                postDate = local_tz.localize(postDate)
+                diff = datetime.now(tz=pytz.utc).astimezone(local_tz) - postDate
+                print(diff.total_seconds() , self.expirationDate)
+
+                if diff.total_seconds() > self.expirationDate:
+                    self.DeleteMessages(i['message'])
+                    continue
+
+                self.messageList.append(i['message'])
+
         else:
             self.messageList = ["Server not working properly"]
+
+        if len(self.messageList):
+            self.messageList = [ 'no new messages' ]
 
     def DeleteMessages(self, message):
         print("Deleting old message")
