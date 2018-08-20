@@ -15,6 +15,9 @@ fi
 sudo pip3 install -U pip
 sudo pip3 install pytz
 sudo pip3 install -U pytz
+sudo pip3 install requests
+sudo pip3 install -U requests
+
 
 sudo apt-get install sense-hat
 
