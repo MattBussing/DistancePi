@@ -20,6 +20,13 @@ sudo apt-get install sense-hat
 
 #sets up rc.local
 cd DistancePi
+echo '{
+    "DEBUG": false,
+    "SLEEP": true,
+    "CLIENT":"Matt",
+    "URL":"https://distance-pi.herokuapp.com",
+    "EXPIRATION": 18000
+}' > code/config.json
 # checks to see if there is a back up for the file
 if [ ! -f /etc/rclocalBackup.txt ]; then
     sudo cp /etc/rc.local /etc/rclocalBackup.txt

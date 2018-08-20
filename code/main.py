@@ -3,6 +3,8 @@ import sys
 import os
 from time import sleep
 from datetime import datetime, time
+import json
+import re
 
 import pytz
 import requests
@@ -10,10 +12,27 @@ import requests
 from messages import Messages
 from my_threads import Repeat, myThread
 
+NAME = "main.py"
+LOCATION = re.sub(NAME, "", sys.argv[0])
+
+try:
+    with open(LOCATION + 'config.json', 'r') as f:
+         config = json.load(f)
+except IOError:
+    config = {
+        "SLEEP": True,
+        "CLIENT":"/Matt",
+        "ERROR": True,
+        "URL":"https://distance-pi.herokuapp.com",
+        "EXPIRTATION": 18000
+    }
+
 DEBUG = False
-SLEEP = True
-CLIENT='/Matt'
-URL='https://distance-pi.herokuapp.com'
+SLEEP = config['SLEEP']
+CLIENT = config['CLIENT']
+URL = config['URL']
+EXPIRTATION = config['EXPIRATION']
+
 
 def processEnd(x):
     for i in x:
@@ -48,12 +67,12 @@ def postMessage(postData):
     print (r)
     return r
 
-
 def main( arg, test=False):
     global SLEEP
     global URL
     global CLIENT
     global DEBUG
+    global EXPIRATION
     # This is the time that we want the pi on
     # TODO make the times part of config file
     morning = time(hour=9)
@@ -68,7 +87,6 @@ def main( arg, test=False):
         microsecond=evening.microsecond,
         tzinfo = pytz.timezone("America/Denver")
     )
-    expirationDate = 48 * 60 * 60 # hr * min/hr * sec/min
 
     for i in arg:
         if(i == "-d"):
@@ -88,13 +106,13 @@ def main( arg, test=False):
 
         elif(i == "-e"): # This sets up test data
             print('setting small expiration date for database entries')
-            expirationDate = 5*60
+            EXPIRATION = 5*60
 
         elif(i == "-s"): # This sets up test data
             print('setting sleep variable off')
             SLEEP = False
 
-    m = Messages(URL, CLIENT, expirationDate )
+    m = Messages(URL, CLIENT, EXPIRTATION )
 
     # This is the process that updates the messages
     rep = Repeat(30, m.getMessages)
