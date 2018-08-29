@@ -1,0 +1,6 @@
+test shutdown
+
+setup config file with all constants / make the main better
+make setup autonomous
+
+shutdown process does not complete
