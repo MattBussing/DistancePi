@@ -70,8 +70,8 @@ def main( arg, test=False):
     global EXPIRATION
     global MORNING
     global EVENING
-    morning = time(hour=9)
-    evening = time(hour=21)
+    morning = time(hour=MORNING)
+    evening = time(hour=EVENING)
     currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
     eveningD = datetime(currentDay.year,
         currentDay.month,
