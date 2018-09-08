@@ -50,6 +50,7 @@ def off(x):
         sense.show_message("shutting down")
         sense.clear()
         os.system('sudo shutdown -h now')
+    # add a method for coming out of sleep here
 
 def deleteMessage(m):
     global CLIENT
