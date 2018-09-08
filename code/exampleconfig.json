@@ -3,5 +3,7 @@
   "CLIENT":"/Matt",
   "ERROR": false,
   "URL":"https://distance-pi.herokuapp.com",
-  "EXPIRTATION": 18000
+  "EXPIRATION": 18000,
+  "MORNING": 8,
+  "EVENING": 22
 }

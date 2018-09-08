@@ -19,20 +19,15 @@ try:
     with open(LOCATION + 'config.json', 'r') as f:
          config = json.load(f)
 except IOError:
-    config = {
-        "SLEEP": True,
-        "CLIENT":"/Matt",
-        "ERROR": True,
-        "URL":"https://distance-pi.herokuapp.com",
-        "EXPIRTATION": 18000
-    }
+    exit(-1)
 
 DEBUG = False
 SLEEP = config['SLEEP']
 CLIENT = config['CLIENT']
 URL = config['URL']
 EXPIRTATION = config['EXPIRATION']
-
+MORNING = config['MORNING']
+EVENING = config['EVENING']
 
 def processEnd(x):
     for i in x:
@@ -73,8 +68,8 @@ def main( arg, test=False):
     global CLIENT
     global DEBUG
     global EXPIRATION
-    # This is the time that we want the pi on
-    # TODO make the times part of config file
+    global MORNING
+    global EVENING
     morning = time(hour=9)
     evening = time(hour=21)
     currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
