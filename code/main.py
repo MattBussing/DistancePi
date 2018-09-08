@@ -13,20 +13,22 @@ from messages import Messages
 from my_threads import Repeat, MyThread
 
 
-def processEnd(x, debug):
+def processEnd(x, debug, verbose):
     for i in x:
         i.stop()
     if not debug:
         global sense
         sense.clear()
-    print("processes killed")
+    if verbose:
+        print("processes killed")
 
-def off(x, debug):
+def off(x):
     global sense
     event = sense.stick.wait_for_event()
-    print(event)
+    if verbose:
+        print(event)
     if(event.direction == 'up'):
-        processEnd(x, debug)
+        processEnd(x, False)
         sense.show_message("shutting down")
         sense.clear()
         os.system('sudo shutdown -h now')
@@ -45,7 +47,7 @@ def processStart(url, client, expiration):
         global sense
         sense = sense_hat.SenseHat()
         processes.append(Repeat(3, m.display, sense.show_message))
-        shutdownSwitch = MyThread(off, processes, debug)
+        shutdownSwitch = MyThread(off, processes)
         shutdownSwitch.start()
 
     # Starts the processes
@@ -99,7 +101,8 @@ def main(willSleep, url, client, debug, expiration, morning, evening, testSleep=
                     testSleep = False
                 else:
                     diff = abs(morningDate - currentDay)
-                    print("going to sleep", diff.total_seconds(), diff)
+                    if verbose:
+                        print("going to sleep", diff.total_seconds(), diff)
                     sleep(diff.total_seconds())# sleeps until morning
 
             if verbose:
