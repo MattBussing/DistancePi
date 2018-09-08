@@ -30,3 +30,9 @@ exit 0
 ' | sudo tee  /media/matt/rootfs/etc/rc.local
 echo "##############################"
 sudo cat /media/matt/rootfs/etc/rc.local
+
+make file ssh in boot partition to enable ssh
+change password via ssh passwd
+
+sudo apt-get install python3-pip
+pip install pytz
