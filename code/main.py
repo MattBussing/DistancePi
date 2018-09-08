@@ -10,69 +10,54 @@ import pytz
 import requests
 
 from messages import Messages
-from my_threads import Repeat, myThread
+from my_threads import Repeat, MyThread
 
-NAME = "main.py"
-LOCATION = re.sub(NAME, "", sys.argv[0])
 
-try:
-    with open(LOCATION + 'config.json', 'r') as f:
-         config = json.load(f)
-except IOError:
-    exit(-1)
-
-DEBUG = False
-SLEEP = config['SLEEP']
-CLIENT = config['CLIENT']
-URL = config['URL']
-EXPIRTATION = config['EXPIRATION']
-MORNING = config['MORNING']
-EVENING = config['EVENING']
-
-def processEnd(x):
+def processEnd(x, debug):
     for i in x:
         i.stop()
-    if not DEBUG:
+    if not debug:
         global sense
         sense.clear()
     print("processes killed")
 
-def processStart(x):
-    for i in x:
-        i.start()
-
-def off(x):
+def off(x, debug):
     global sense
     event = sense.stick.wait_for_event()
     print(event)
     if(event.direction == 'up'):
-        processEnd(x)
+        processEnd(x, debug)
         sense.show_message("shutting down")
         sense.clear()
         os.system('sudo shutdown -h now')
-    # add a method for coming out of sleep here
+    # TODO add a method for coming out of sleep here
 
-def deleteMessage(m):
-    global CLIENT
-    global URL
-    return requests.delete(url=URL+CLIENT, json={'message':m})
+def processStart(url, client, expiration):
+    # This is the process that updates the messages
+    m = Messages(url, client, expiration)
+    processes = [Repeat(30, m.getMessages)]
 
-def postMessage(postData):
-    global URL
-    r = requests.post(url=URL, json=postData)
-    print (r)
-    return r
+    # This is the process that displays the information
+    if debug:
+        processes.append(Repeat(3, m.display, print))
+    else:
+        import sense_hat
+        global sense
+        sense = sense_hat.SenseHat()
+        processes.append(Repeat(3, m.display, sense.show_message))
+        shutdownSwitch = MyThread(off, processes, debug)
+        shutdownSwitch.start()
 
-def main( arg, test=False):
-    global SLEEP
-    global URL
-    global CLIENT
-    global DEBUG
-    global EXPIRATION
-    global MORNING
-    global EVENING
-    morning = time(hour=MORNING)
-    evening = time(hour=EVENING)
+    # Starts the processes
+    for i in processes:
+        i.start()
+    #links processes
+    return processes
+
+
+def main(willSleep, url, client, debug, expiration, morning, evening, testSleep=False, verbose=False):
+    morning = time(hour=morning)
+    evening = time(hour=evening)
     currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
     eveningD = datetime(currentDay.year,
         currentDay.month,
@@ -83,75 +68,25 @@ def main( arg, test=False):
         microsecond=evening.microsecond,
         tzinfo = pytz.timezone("America/Denver")
     )
-
-    for i in arg:
-        if(i == "-d"):
-            print('Entering Debug mode')
-            DEBUG = True
-
-        elif(i == "-l"):  # makes server local
-            print('using local server')
-            URL='http://127.0.0.1:5000'
-
-        elif(i == "-u"): # This sets up test data
-            print('uploading test data')
-            messageList = [ 'lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
-            for i in messageList:
-                postProcess = myThread(postMessage, postData= {'message':i, '_to':'Matt'} )
-                postProcess.start()
-
-        elif(i == "-e"): # This sets up test data
-            print('setting small expiration date for database entries')
-            EXPIRATION = 5*60
-
-        elif(i == "-s"): # This sets up test data
-            print('setting sleep variable off')
-            SLEEP = False
-
-    m = Messages(URL, CLIENT, EXPIRTATION )
-
-    # This is the process that updates the messages
-    rep = Repeat(30, m.getMessages)
-    processes = [rep]
-    # This is the process that displays the information
-    if DEBUG:
-        rep2 = Repeat(3, m.display, print)
-        processes.append(rep2)
-    else:
-        import sense_hat
-        global sense
-        sense = sense_hat.SenseHat()
-        rep2 = Repeat(3, m.display, sense.show_message)
-        processes.append(rep2)
-        shutdownProcess = myThread(off, processes)
-        shutdownProcess.start()
-
-    # Starts the processes
-    processStart(processes)
-
+    processes = processStart(url, client, expiration)
     # Loops until time for bed then it goes to sleep till morning
-    flag = False # flags if the process stops
+    isStopped = False # flags if the process stops
     try:
         while True:
             currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
-            # ##### testing
-            # early = time(hour=8)
-            # early = datetime(currentDay.year, currentDay.month, currentDay.day,  hour=early.hour, minute=early.minute, second=early.second, microsecond=early.microsecond).astimezone(pytz.timezone("America/Denver"))
-            # currentDay = early
-            # ######
             rn = currentDay.time()
-            if( not(rn < evening and rn > morning) and SLEEP): # This checks to see if we want to display rn
-                # Stops processes
-                processEnd(processes)
-                flag = True # sets flag
+            if( not(rn < evening and rn > morning) and willSleep or testSleep): # This checks to see if we want to display messages right now (rn)
+                processEnd(processes,debug)
+                isStopped = True
 
-                temp = 0
+                # this fixes the event that it is past midnight
+                differentDay = 0
                 if currentDay >= eveningD:
-                    temp =1
+                    differentDay =1
 
                 morningDate = datetime(currentDay.year,
                     currentDay.month,
-                    currentDay.day+temp,
+                    currentDay.day+differentDay,
                     hour=morning.hour,
                     minute=morning.minute,
                     second=morning.second,
@@ -159,21 +94,84 @@ def main( arg, test=False):
                     tzinfo = pytz.timezone("America/Denver")
                 )
 
-                diff = morningDate - currentDay
-                print("going to sleep", diff.total_seconds(), diff)
-                # waits until morning
-                sleep(diff.total_seconds())
+                if testSleep:
+                    sleep(5)
+                    testSleep = False
+                else:
+                    diff = abs(morningDate - currentDay)
+                    print("going to sleep", diff.total_seconds(), diff)
+                    sleep(diff.total_seconds())# sleeps until morning
 
-            elif(flag): # restarts processes if time to display
-                processStart(processes)
+            if verbose:
+                print("isStopped=")
+                print(isStopped)
 
-            sleep(5)# pauses for 5 seconds
+            if isStopped: #checks if processes were killed
+                # restarts processes if time to display
+                print("starting processes")
+                processes = processStart(url, client, expiration)
+                isStopped = False # resets
+
+            sleep(30)# pauses for 30 seconds before restarting loop
 
     except KeyboardInterrupt:
         print('KeyboardInterrupt received. Exiting.')
-        processEnd(processes)
+        processEnd(processes,debug)
         exit()
 
-
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    NAME = "main.py"
+    LOCATION = re.sub(NAME, "", sys.argv[0])
+    debug = False
+    testSleep = False
+    verbose = False
+
+    #loads config file (config)
+    try:
+        with open(LOCATION + 'config.json', 'r') as f:
+             config = json.load(f)
+    except IOError:
+        print("error missing config file")
+        exit(-1)
+
+    # processes command line arguments
+    for i in sys.argv[1:]:
+        if(i == "-d"):
+            print('Entering Debug mode')
+            debug = True
+
+        elif(i == "-l"):  # makes server local
+            print('using local server')
+            config['URL']='http://127.0.0.1:5000'
+
+        elif(i == "-u"): # This sets up test data
+            print('uploading test data')
+            messageList = [ 'lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
+
+            def postMessage(postData, url):
+                r = requests.post(url=url, json=postData)
+                print (r)
+                return r
+
+            for i in messageList:
+                postProcess = MyThread(postMessage, postData= {'message':i, '_to':'Matt'} )
+                postProcess.start()
+
+        elif(i == "-e"): # This sets up test data
+            print('setting small expiration date for database entries')
+            config['EXPIRATION'] = 5*60
+
+        elif(i == "-s"): # This sets up test data
+            print('setting sleep variable off')
+            config['SLEEP'] = False
+
+        elif(i == "-t"):  # makes server local
+            print('testing sleep')
+            testSleep = True
+
+        elif(i == "-v"):  # makes server local
+            print('verbose')
+            verbose = True
+    #starts program
+    # def main( sleep, url, client, debug, expiration, morning, evening)
+    main(config['SLEEP'], config['URL'], config['CLIENT'], debug, config['EXPIRATION'], config['MORNING'], config['EVENING'], testSleep=testSleep, verbose=verbose)
