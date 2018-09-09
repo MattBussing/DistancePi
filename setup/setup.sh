@@ -40,10 +40,9 @@ fi
 sudo cp setup/rc.local /etc/rc.local
 sudo chmod +x /etc/rc.local
 
+
 sudo systemctl daemon-reload
 
 sudo reboot
 
-
-sudo systemctl daemon-reload
- sudo systemctl enable myscript.service
+StandardOutput=tty

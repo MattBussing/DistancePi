@@ -4,8 +4,7 @@
 
 [Service]
   Type=idle
-  ExecStart=/usr/bin/python3 /home/pi/DistancePi/code/main.py
-  StandardOutput=tty
+  ExecStart=/usr/bin/python3.5 /home/pi/DistancePi/code/main.py
   RemainAfterExit=yes
 
 [Install]
