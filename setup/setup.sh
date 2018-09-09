@@ -1,5 +1,8 @@
 # Author: Matt Bussing
 # set up ssh and wifi via raspi-config
+# for ssh add the file ssh to the boot folder
+
+
 
 sudo apt-get update
 sudo apt-get -y upgrade
@@ -37,4 +40,10 @@ fi
 sudo cp setup/rc.local /etc/rc.local
 sudo chmod +x /etc/rc.local
 
+sudo systemctl daemon-reload
+
 sudo reboot
+
+
+sudo systemctl daemon-reload
+ sudo systemctl enable myscript.service

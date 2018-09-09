@@ -36,3 +36,11 @@ change password via ssh passwd
 
 sudo apt-get install python3-pip
 pip install pytz
+
+
+[Service]
+ Type=forking
+ ExecStart=/etc/rc.local start
+ TimeoutSec=0
+
+ SysVStartPriority=99

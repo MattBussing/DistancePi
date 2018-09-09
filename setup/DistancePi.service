@@ -1,0 +1,12 @@
+[Unit]
+  Description=DistancePi start up at the beginning
+  After=multi-user.target
+
+[Service]
+  Type=idle
+  ExecStart=/usr/bin/python3 /home/pi/DistancePi/code/main.py
+  StandardOutput=tty
+  RemainAfterExit=yes
+
+[Install]
+  WantedBy=multi-user.target
