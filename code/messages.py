@@ -5,15 +5,17 @@ import pytz
 
 
 class Messages():
-    def __init__(self, url, client, expirationDate):
+    def __init__(self, url, client, expirationDate, verbose=False):
         # Stores a list of messages
         self.messageList = ["Messages not updated yet"]
         self.url = url
         self.client = client
         self.expirationDate = expirationDate
+        self.verbose = verbose
 
     def getMessages(self):
-        print("getting messages")
+        if sel.verbose:
+            print("getting messages")
         r = requests.get(url = self.url + self.client)
 
         if(r.status_code == 200):
@@ -28,8 +30,8 @@ class Messages():
 
                     diff = datetime.now(tz=pytz.utc) - postDate #finds difference between when the item was posted and rn
 
-                    # # DEBUG: this print statement is only for debugging
-                    print(diff.total_seconds(), self.expirationDate)
+                    if self.verbose:
+                        print(diff.total_seconds(), self.expirationDate)
                     # deletes the message if it is too old and continues
                     if diff.total_seconds() > self.expirationDate:
                         self.DeleteMessages(i['message'])
@@ -46,11 +48,13 @@ class Messages():
             self.messageList.append('no new messages')
 
     def DeleteMessages(self, message):
-        print("Deleting old message")
+        if self.verbose:
+            print("Deleting old message")
         r = requests.delete(url = self.url + self.client, json = {'message':message})
 
         if(r.status_code == 200):
-            print(r.json()['message'])
+            if self.verbose:
+                print(r.json()['message'])
         else:
             self.messageList = ["Server not working properly"]
 

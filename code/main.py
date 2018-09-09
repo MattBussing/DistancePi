@@ -13,7 +13,7 @@ from messages import Messages
 from my_threads import Repeat, MyThread
 
 
-def processEnd(x, debug, verbose):
+def processEnd(x, debug=False, verbose=False):
     for i in x:
         i.stop()
     if not debug:
@@ -22,13 +22,13 @@ def processEnd(x, debug, verbose):
     if verbose:
         print("processes killed")
 
-def off(x):
+def senseHatOptions(x):
     global sense
     event = sense.stick.wait_for_event()
     if verbose:
         print(event)
     if(event.direction == 'up'):
-        processEnd(x, False)
+        processEnd(x)
         sense.show_message("shutting down")
         sense.clear()
         os.system('sudo shutdown -h now')
@@ -47,7 +47,7 @@ def processStart(url, client, expiration):
         global sense
         sense = sense_hat.SenseHat()
         processes.append(Repeat(3, m.display, sense.show_message))
-        shutdownSwitch = MyThread(off, processes)
+        shutdownSwitch = MyThread(senseHatOptions, processes)
         shutdownSwitch.start()
 
     # Starts the processes
@@ -70,6 +70,7 @@ def main(willSleep, url, client, debug, expiration, morning, evening, testSleep=
         microsecond=evening.microsecond,
         tzinfo = pytz.timezone("America/Denver")
     )
+    #Start processes
     processes = processStart(url, client, expiration)
     # Loops until time for bed then it goes to sleep till morning
     isStopped = False # flags if the process stops
@@ -78,7 +79,8 @@ def main(willSleep, url, client, debug, expiration, morning, evening, testSleep=
             currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
             rn = currentDay.time()
             if( not(rn < evening and rn > morning) and willSleep or testSleep): # This checks to see if we want to display messages right now (rn)
-                processEnd(processes,debug)
+                #Stops processes
+                processEnd(processes, debug, verbose)
                 isStopped = True
 
                 # this fixes the event that it is past midnight
@@ -111,7 +113,8 @@ def main(willSleep, url, client, debug, expiration, morning, evening, testSleep=
 
             if isStopped: #checks if processes were killed
                 # restarts processes if time to display
-                print("starting processes")
+                if verbose:
+                    print("starting processes")
                 processes = processStart(url, client, expiration)
                 isStopped = False # resets
 
@@ -151,7 +154,7 @@ if __name__ == '__main__':
             print('uploading test data')
             messageList = [ 'lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
 
-            def postMessage(postData, url):
+            def postMessage(postData, url, verbose=False):
                 r = requests.post(url=url, json=postData)
                 print (r)
                 return r
