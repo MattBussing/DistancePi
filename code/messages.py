@@ -14,7 +14,7 @@ class Messages():
         self.verbose = verbose
 
     def getMessages(self):
-        if sel.verbose:
+        if self.verbose:
             print("getting messages")
         r = requests.get(url = self.url + self.client)
 

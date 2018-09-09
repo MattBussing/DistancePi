@@ -4,3 +4,4 @@ This project is intended to be ran on a raspberry pi. One can upload content ont
 
 #Notes
  - scp documents/DistancePi/code/exampleconfig.json pi@[ip_address]:/home/pi/DistancePi/code/config.json to move config to pi
+ - This project assumes you are using a headless raspberry pi with sensehat. Thus, use -v (verbose) to print to terminal.
