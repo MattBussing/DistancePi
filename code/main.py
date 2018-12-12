@@ -13,39 +13,48 @@ from messages import Messages
 from my_threads import MyThread, Repeat
 
 
-def processEnd(x, debug=False, verbose=False):
-    for i in x:
-        i.stop()
-    if not debug:
-        global sense
-        sense.clear()
-    if verbose:
-        print("processes killed")
-
-
-def senseHatOptions(sense):
-    event = sense.stick.wait_for_event()
-    if verbose:
-        print(event)
-    if(event.direction == 'up'):
-        processEnd(x)
-        sense.show_message("shutting down")
-        sense.clear()
-        os.system('sudo shutdown now')
-    # TODO add a method for coming out of sleep here
-
-
 class Pi(object):
     def __init__(self, url, client, expirationDate, verbose=False):
-        import sense_hat
-        self.senseHat = sense_hat.SenseHat()
-        self.messageDisplay = None
-        # Stores a list of messages
+        self.onComputer = True
         self.messageList = ["Messages not updated yet"]
         self.url = url
         self.client = client
         self.expirationDate = expirationDate
         self.verbose = verbose
+
+        self.processes = {'get': Repeat(
+            30, m.getMessages), 'print': Repeat(3, m.display, print), 'options':
+            MyThread(senseHatOptions, processes)}
+
+        if self.onComputer:
+            pass
+        else:
+            import sense_hat
+            self.senseHat = sense_hat.SenseHat()
+            self.processes['print'] = Repeat(3, m.display, sense.show_message)
+
+        for i, j in self.processes.itemize():
+            j.start()
+
+    def shutdown(self):
+        self.processes['print'].stop()
+        self.processes['get'].stop()
+        # self.processes['options']
+        if not onComputer:
+            self.sense.clear()
+        if self.verbose:
+            print("processes killed")
+
+    def senseHatOptions(self):
+        event = self.stick.wait_for_event()
+        if verbose:
+            print(event)
+        if(event.direction == 'up'):
+            processEnd(x)
+            sense.show_message("shutting down")
+            sense.clear()
+            os.system('sudo shutdown now')
+        # TODO add a method for coming out of sleep here
 
     def getMessages(self):
         if self.verbose:
@@ -98,27 +107,6 @@ class Pi(object):
     def display(self, displayFunction):
         for i in self.messageList:
             displayFunction(i)
-
-
-def processStart(url, client, expiration):
-    # This is the process that updates the messages
-    m = Messages(url, client, expiration)
-    processes = [Repeat(30, m.getMessages)]
-
-    # This is the process that displays the information
-    if debug:
-        processes.append(Repeat(3, m.display, print))
-    else:
-
-        processes.append(Repeat(3, m.display, sense.show_message))
-        shutdownSwitch = MyThread(senseHatOptions, processes)
-        shutdownSwitch.start()
-
-    # Starts the processes
-    for i in processes:
-        i.start()
-    # links processes
-    return processes
 
 
 def main(willSleep, url, client, debug, expiration, morning, evening, testSleep=False, verbose=False):
