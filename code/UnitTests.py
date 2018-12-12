@@ -2,11 +2,10 @@
 #  Tests used to be done via terminal now add tests here
 
 
-
-import unittest
 import json
 import re
 import sys
+import unittest
 
 import requests
 
@@ -20,9 +19,8 @@ class TestAdd(unittest.TestCase):
     test = 'Matt'
     delUrl = url + '/' + test
 
-
-    delJson = {'message':'value'}
-    postJson = {'message':'value', '_to':'testing'}
+    delJson = {'message': 'value'}
+    postJson = {'message': 'value', '_to': 'testing'}
 
     def deleteMessage(self):
         return requests.delete(url=self.delUrl, json=self.delJson)
@@ -37,10 +35,10 @@ class TestAdd(unittest.TestCase):
         NAME = "UnitTests.py"
         LOCATION = re.sub(NAME, "", sys.argv[0])
 
-        #loads config file (config)
+        # loads config file (config)
         try:
             with open(LOCATION + 'config.json', 'r') as f:
-                 config = json.load(f)
+                config = json.load(f)
         except IOError:
             print("error missing config file")
             exit(-1)
@@ -52,15 +50,18 @@ class TestAdd(unittest.TestCase):
         # config['URL']='http://127.0.0.1:5000'
 
         print('uploading test data')
-        messageList = [ 'lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
+        messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
         for i in messageList:
-            postProcess = MyThread(self.postMessage, postData= {'message':i, '_to':self.test} )
+            postProcess = MyThread(self.postMessage, postData={
+                                   'message': i, '_to': self.test})
             postProcess.start()
 
-        self.assertEqual(main(config['SLEEP'], self.url, self.delUrl, debug, config['EXPIRATION'], config['MORNING'], config['EVENING']), 1)
+        self.assertEqual(main(config['SLEEP'], self.url, self.delUrl, debug,
+                              config['EXPIRATION'], config['MORNING'], config['EVENING']), 1)
 
     def test_sleep_exit(self):
         # python code/main.py -d -t
+
 
 if __name__ == '__main__':
     unittest.main()
