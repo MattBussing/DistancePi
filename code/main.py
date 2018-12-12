@@ -41,6 +41,7 @@ class Device(object):
         self.client = config['CLIENT']
         self.expiration = config['EXPIRATION']
 
+        # self.sense = None
         if not self.onComputer:
             import sense_hat
             self.senseHat = sense_hat.SenseHat()
@@ -54,7 +55,7 @@ class Device(object):
         if self.onComputer:
             displayFunction = print
         else:
-            displayFunction = sense.show_message
+            displayFunction = self.sense.show_message
         for i in self.messageList:
             displayFunction(i)
 
