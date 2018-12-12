@@ -16,7 +16,7 @@ class Device(object):
     def __init__(self, name="main.py", verbose=False, testSleep=False, onComputer=False, tests=False):
         self.verbose = verbose
         self.testSleep = testSleep
-        self.onComputer = ofnComputer
+        self.onComputer = onComputer
         self.messageList = ["Messages not updated yet"]
         self.name = name
         self.tests = tests
