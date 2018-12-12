@@ -195,7 +195,7 @@ class Device(object):
                     print("next", i)
                     if i > 5:
                         self.processEnd()
-                        sys.exit()
+                        return self.messageList
                     i += 1
                 else:
                     sleep(30)  # pauses for 30 seconds before restarting loop

@@ -48,10 +48,8 @@ class TestAdd(unittest.TestCase):
         """
             test a normal run
         """
-        # print('using local server')
-        # config['URL']='http://127.0.0.1:5000'
-
         d = Device(name="UnitTests.py", tests=True)
+        m = d.main()
         print('uploading test data')
         messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
         for i in messageList:
@@ -59,9 +57,7 @@ class TestAdd(unittest.TestCase):
                                    'message': i, '_to': self.test})
             postProcess.start()
 
-        self.assertEqual(d.main())
-        # self.assertEqual(main(config['SLEEP'], self.url, self.delUrl, debug,
-        #                       config['EXPIRATION'], config['MORNING'], config['EVENING']), 1)
+        self.assertEqual(d.main().sort(), messageList.sort())
 
         # def test_sleep_exit(self):
         #     # python code/main.py -d -t
