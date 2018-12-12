@@ -13,12 +13,15 @@ from my_threads import MyThread, Repeat
 
 
 class Device(object):
-    def __init__(self, verbose=False, testSleep=False, onComputer=True):
+    def __init__(self, name="main.py", verbose=False, testSleep=False, onComputer=True, tests=False):
         self.verbose = verbose
         self.testSleep = testSleep
         self.onComputer = onComputer
         self.messageList = ["Messages not updated yet"]
-        self.name = "main.py"
+        self.name = name
+        self.tests = tests
+        if tests:
+            print("tests active")
         self.location = re.sub(self.name, "", sys.argv[0])
 
         self.processes = {'get': Repeat(30, self.getMessages), 'print': Repeat(3, self.display), 'options':
@@ -141,6 +144,7 @@ class Device(object):
         # Loops until time for bed then it goes to sleep till morning
         isStopped = False  # flags if the process stops
         try:
+            i = 0
             while True:
                 currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
                 rn = currentDay.time()
@@ -186,8 +190,15 @@ class Device(object):
                     processes = self.processStart()
                     isStopped = False  # resets
 
-                sleep(30)  # pauses for 30 seconds before restarting loop
-
+                if self.tests:
+                    sleep(1)
+                    print("next", i)
+                    if i > 5:
+                        self.processEnd()
+                        sys.exit()
+                    i += 1
+                else:
+                    sleep(30)  # pauses for 30 seconds before restarting loop
         except KeyboardInterrupt:
             print('KeyboardInterrupt received. Exiting.')
             self.processEnd()
