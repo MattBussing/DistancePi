@@ -41,10 +41,9 @@ class Device(object):
         self.client = config['CLIENT']
         self.expiration = config['EXPIRATION']
 
-        # self.sense = None
         if not self.onComputer:
-            import sense_hat
-            self.sense = sense_hat.SenseHat()
+            from sense_hat import SenseHat
+            self.senseHat = SenseHat()
 
         self.processes['print'] = Repeat(3, self.display)
 
@@ -55,7 +54,7 @@ class Device(object):
         if self.onComputer:
             displayFunction = print
         else:
-            displayFunction = self.sense.show_message
+            displayFunction = self.senseHat.show_message
         for i in self.messageList:
             displayFunction(i)
 
@@ -69,8 +68,8 @@ class Device(object):
         self.processes['get'].stop()
         # self.processes['options']
         if not self.onComputer:
-            self.sense.clear()
-            sense.show_message("shutting down")
+            self.senseHat.clear()
+            self.senseHat.show_message("shutting down")
         else:
             print("shutting down")
         if self.verbose:
