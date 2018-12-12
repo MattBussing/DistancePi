@@ -16,7 +16,7 @@ class Device(object):
     def __init__(self, name="main.py", verbose=False, testSleep=False, onComputer=False, tests=False):
         self.verbose = verbose
         self.testSleep = testSleep
-        self.onComputer = onComputer
+        self.onComputer = ofnComputer
         self.messageList = ["Messages not updated yet"]
         self.name = name
         self.tests = tests
@@ -41,15 +41,22 @@ class Device(object):
         self.client = config['CLIENT']
         self.expiration = config['EXPIRATION']
 
-        if self.onComputer:
-            pass
-        else:
+        if not self.onComputer:
             import sense_hat
             self.senseHat = sense_hat.SenseHat()
-            self.processes['print'] = Repeat(3, m.display, sense.show_message)
+
+        self.processes['print'] = Repeat(3, self.display)
 
         for i, j in self.processes.items():
             j.start()
+
+    def display(self):
+        if self.onComputer:
+            displayFunction = print
+        else:
+            displayFunction = sense.show_message
+        for i in self.messageList:
+            displayFunction(i)
 
     def processEnd(self):
         self.processes['print'].stop()
@@ -121,14 +128,6 @@ class Device(object):
                 print(r.json()['message'])
         else:
             self.messageList = ["Server not working properly"]
-
-    def display(self):
-        if self.onComputer:
-            displayFunction = print
-        else:
-            displayFunction = sense.show_message
-        for i in self.messageList:
-            displayFunction(i)
 
     def main(self):
         currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
