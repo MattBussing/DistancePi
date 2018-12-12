@@ -51,7 +51,7 @@ class Device(object):
     def processEnd(self):
         self.processes['print'].stop()
         self.processes['get'].stop()
-        self.processes['options'].stop()
+        # self.processes['options'].stop()
 
     def shutdown(self):
         self.processes['print'].stop()
