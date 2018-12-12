@@ -61,6 +61,7 @@ class TestAdd(unittest.TestCase):
 
     def test_sleep_exit(self):
         # python code/main.py -d -t
+        pass
 
 
 if __name__ == '__main__':

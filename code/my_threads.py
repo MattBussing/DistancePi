@@ -19,7 +19,7 @@ class Repeat(Thread):
             self.abort.wait(self.delay)
 
 
-class MyThread (Thread):
+class MyThread(Thread):
     def __init__(self, function, *args, **kwargs):
         Thread.__init__(self)
         self.args = args
