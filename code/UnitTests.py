@@ -9,7 +9,7 @@ import unittest
 
 import requests
 
-from main import main
+from main import Device
 from my_threads import MyThread
 
 
@@ -62,6 +62,12 @@ class TestAdd(unittest.TestCase):
     def test_sleep_exit(self):
         # python code/main.py -d -t
         pass
+
+    def test_sleep(self):
+        pass
+        # elif(i == "-t"):  # makes server local
+        #     print('testing sleep')
+        #     testSleep = True
 
 
 if __name__ == '__main__':

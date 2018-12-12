@@ -9,22 +9,21 @@ from time import sleep
 import pytz
 import requests
 
-from messages import Messages
 from my_threads import MyThread, Repeat
 
 
-class Pi(object):
-    def __init__(self, url, client, expirationDate, verbose=False):
+class Device(object):
+    def __init__(self, url, client, expirationDate, verbose=False, testSleep=False):
         self.onComputer = True
         self.messageList = ["Messages not updated yet"]
         self.url = url
         self.client = client
         self.expirationDate = expirationDate
         self.verbose = verbose
+        self.testSleep = testSleep
 
-        self.processes = {'get': Repeat(
-            30, m.getMessages), 'print': Repeat(3, m.display, print), 'options':
-            MyThread(senseHatOptions, processes)}
+        self.processes = {'get': Repeat(30, self.getMessages), 'print': Repeat(3, self.display), 'options':
+                          MyThread(self.senseHatOptions)}
 
         if self.onComputer:
             pass
@@ -33,28 +32,34 @@ class Pi(object):
             self.senseHat = sense_hat.SenseHat()
             self.processes['print'] = Repeat(3, m.display, sense.show_message)
 
-        for i, j in self.processes.itemize():
+        for i, j in self.processes.items():
             j.start()
+
+    def processEnd(self):
+        self.processes['print'].stop()
+        self.processes['get'].stop()
+        self.processes['options'].stop()
 
     def shutdown(self):
         self.processes['print'].stop()
         self.processes['get'].stop()
         # self.processes['options']
-        if not onComputer:
+        if not self.onComputer:
             self.sense.clear()
+            sense.show_message("shutting down")
+        else:
+            print("shutting down")
         if self.verbose:
             print("processes killed")
+        os.system('sudo shutdown now')
 
     def senseHatOptions(self):
-        event = self.stick.wait_for_event()
-        if verbose:
-            print(event)
-        if(event.direction == 'up'):
-            processEnd(x)
-            sense.show_message("shutting down")
-            sense.clear()
-            os.system('sudo shutdown now')
-        # TODO add a method for coming out of sleep here
+        if not self.onComputer:
+            event = self.stick.wait_for_event()
+            if verbose:
+                print(event)
+            if(event.direction == 'up'):
+                self.shutdown()
 
     def getMessages(self):
         if self.verbose:
@@ -89,9 +94,6 @@ class Pi(object):
         else:
             self.messageList = ["Server not working properly"]
 
-        # if len(self.messageList) == 0:
-        #     self.messageList.append('no new messages')
-
     def DeleteMessages(self, message):
         if self.verbose:
             print("Deleting old message")
@@ -104,86 +106,87 @@ class Pi(object):
         else:
             self.messageList = ["Server not working properly"]
 
-    def display(self, displayFunction):
+    def display(self):
+        if self.onComputer:
+            displayFunction = print
+        else:
+            displayFunction = sense.show_message
         for i in self.messageList:
             displayFunction(i)
 
+    def main(self, morning, evening):
+        morning = time(hour=morning)
+        evening = time(hour=evening)
+        currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
+        eveningD = datetime(currentDay.year,
+                            currentDay.month,
+                            currentDay.day,
+                            hour=evening.hour,
+                            minute=evening.minute,
+                            second=evening.second,
+                            microsecond=evening.microsecond,
+                            tzinfo=pytz.timezone("America/Denver")
+                            )
+        # Loops until time for bed then it goes to sleep till morning
+        isStopped = False  # flags if the process stops
+        try:
+            while True:
+                currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
+                rn = currentDay.time()
+                # This checks to see if we want to display messages right now (rn)
+                if(not(rn < evening and rn > morning) and willSleep or self.testSleep):
+                    # Stops processes
+                    processEnd(processes, debug, verbose)
+                    isStopped = True
 
-def main(willSleep, url, client, debug, expiration, morning, evening, testSleep=False, verbose=False):
-    morning = time(hour=morning)
-    evening = time(hour=evening)
-    currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
-    eveningD = datetime(currentDay.year,
-                        currentDay.month,
-                        currentDay.day,
-                        hour=evening.hour,
-                        minute=evening.minute,
-                        second=evening.second,
-                        microsecond=evening.microsecond,
-                        tzinfo=pytz.timezone("America/Denver")
-                        )
-    # Start processes
-    processes = processStart(url, client, expiration)
-    # Loops until time for bed then it goes to sleep till morning
-    isStopped = False  # flags if the process stops
-    try:
-        while True:
-            currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
-            rn = currentDay.time()
-            # This checks to see if we want to display messages right now (rn)
-            if(not(rn < evening and rn > morning) and willSleep or testSleep):
-                # Stops processes
-                processEnd(processes, debug, verbose)
-                isStopped = True
+                    # this fixes the event that it is past midnight
+                    differentDay = 0
+                    if currentDay >= eveningD:
+                        differentDay = 1
 
-                # this fixes the event that it is past midnight
-                differentDay = 0
-                if currentDay >= eveningD:
-                    differentDay = 1
+                    morningDate = datetime(currentDay.year,
+                                           currentDay.month,
+                                           currentDay.day + differentDay,
+                                           hour=morning.hour,
+                                           minute=morning.minute,
+                                           second=morning.second,
+                                           microsecond=morning.microsecond,
+                                           tzinfo=pytz.timezone(
+                                               "America/Denver")
+                                           )
 
-                morningDate = datetime(currentDay.year,
-                                       currentDay.month,
-                                       currentDay.day + differentDay,
-                                       hour=morning.hour,
-                                       minute=morning.minute,
-                                       second=morning.second,
-                                       microsecond=morning.microsecond,
-                                       tzinfo=pytz.timezone("America/Denver")
-                                       )
+                    if self.testSleep:
+                        sleep(5)
+                        self.testSleep = False
+                    else:
+                        diff = abs(morningDate - currentDay)
+                        if verbose:
+                            print("going to sleep", diff.total_seconds(), diff)
+                        sleep(diff.total_seconds())  # sleeps until morning
 
-                if testSleep:
-                    sleep(5)
-                    testSleep = False
-                else:
-                    diff = abs(morningDate - currentDay)
-                    if verbose:
-                        print("going to sleep", diff.total_seconds(), diff)
-                    sleep(diff.total_seconds())  # sleeps until morning
-
-            if verbose:
-                print("isStopped=")
-                print(isStopped)
-
-            if isStopped:  # checks if processes were killed
-                # restarts processes if time to display
                 if verbose:
-                    print("starting processes")
-                processes = processStart(url, client, expiration)
-                isStopped = False  # resets
+                    print("isStopped=")
+                    print(isStopped)
 
-            sleep(30)  # pauses for 30 seconds before restarting loop
+                if isStopped:  # checks if processes were killed
+                    # restarts processes if time to display
+                    if verbose:
+                        print("starting processes")
+                    processes = processStart(url, client, expiration)
+                    isStopped = False  # resets
 
-    except KeyboardInterrupt:
-        print('KeyboardInterrupt received. Exiting.')
-        processEnd(processes, debug)
-        exit()
+                sleep(30)  # pauses for 30 seconds before restarting loop
+
+        except KeyboardInterrupt:
+            print('KeyboardInterrupt received. Exiting.')
+            self.processEnd()
+            exit()
 
 
 if __name__ == '__main__':
     NAME = "main.py"
     LOCATION = re.sub(NAME, "", sys.argv[0])
     debug = False
-    testSleep = False
     verbose = False
 
     # loads config file (config)
@@ -226,14 +229,10 @@ if __name__ == '__main__':
             print('setting sleep variable off')
             config['SLEEP'] = False
 
-        elif(i == "-t"):  # makes server local
-            print('testing sleep')
-            testSleep = True
-
         elif(i == "-v"):  # makes server local
             print('verbose')
             verbose = True
     # starts program
-    # def main( sleep, url, client, debug, expiration, morning, evening)
-    main(config['SLEEP'], config['URL'], config['CLIENT'], debug, config['EXPIRATION'],
-         config['MORNING'], config['EVENING'], testSleep=testSleep, verbose=verbose)
+    d = Device(config['URL'], config['CLIENT'],
+               config['EXPIRATION'], verbose=False)
+    d.main(config['MORNING'], config['EVENING'])
