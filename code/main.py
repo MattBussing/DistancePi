@@ -44,7 +44,7 @@ class Device(object):
         # self.sense = None
         if not self.onComputer:
             import sense_hat
-            self.senseHat = sense_hat.SenseHat()
+            self.sense = sense_hat.SenseHat()
 
         self.processes['print'] = Repeat(3, self.display)
 
