@@ -13,17 +13,30 @@ from my_threads import MyThread, Repeat
 
 
 class Device(object):
-    def __init__(self, url, client, expirationDate, verbose=False, testSleep=False):
-        self.onComputer = True
-        self.messageList = ["Messages not updated yet"]
-        self.url = url
-        self.client = client
-        self.expirationDate = expirationDate
+    def __init__(self, verbose=False, testSleep=False, onComputer=True):
         self.verbose = verbose
         self.testSleep = testSleep
+        self.onComputer = onComputer
+        self.messageList = ["Messages not updated yet"]
+        self.name = "main.py"
+        self.location = re.sub(self.name, "", sys.argv[0])
 
         self.processes = {'get': Repeat(30, self.getMessages), 'print': Repeat(3, self.display), 'options':
                           MyThread(self.senseHatOptions)}
+
+        # loads config file (config)
+        try:
+            with open(self.location + 'config.json', 'r') as f:
+                config = json.load(f)
+        except IOError:
+            print("error missing config file")
+            exit(-1)
+
+        self.morning = time(hour=config['MORNING'])
+        self.evening = time(hour=config['EVENING'])
+        self.url = config['URL']
+        self.client = config['CLIENT']
+        self.expiration = config['EXPIRATION']
 
         if self.onComputer:
             pass
@@ -82,9 +95,9 @@ class Device(object):
                     diff = datetime.now(tz=pytz.utc) - postDate
 
                     if self.verbose:
-                        print(diff.total_seconds(), self.expirationDate)
+                        print(diff.total_seconds(), self.expiration)
                     # deletes the message if it is too old and continues
-                    if diff.total_seconds() > self.expirationDate:
+                    if diff.total_seconds() > self.expiration:
                         self.DeleteMessages(i['message'])
                         continue
 
@@ -114,19 +127,17 @@ class Device(object):
         for i in self.messageList:
             displayFunction(i)
 
-    def main(self, morning, evening):
-        morning = time(hour=morning)
-        evening = time(hour=evening)
+    def main(self):
         currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
-        eveningD = datetime(currentDay.year,
-                            currentDay.month,
-                            currentDay.day,
-                            hour=evening.hour,
-                            minute=evening.minute,
-                            second=evening.second,
-                            microsecond=evening.microsecond,
-                            tzinfo=pytz.timezone("America/Denver")
-                            )
+        self.eveningD = datetime(currentDay.year,
+                                 currentDay.month,
+                                 currentDay.day,
+                                 hour=self.evening.hour,
+                                 minute=self.evening.minute,
+                                 second=self.evening.second,
+                                 microsecond=self.evening.microsecond,
+                                 tzinfo=pytz.timezone("America/Denver")
+                                 )
         # Loops until time for bed then it goes to sleep till morning
         isStopped = False  # flags if the process stops
         try:
@@ -134,9 +145,9 @@ class Device(object):
                 currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
                 rn = currentDay.time()
                 # This checks to see if we want to display messages right now (rn)
-                if(not(rn < evening and rn > morning) and willSleep or self.testSleep):
+                if(not(rn < self.evening and rn > self.morning) and willSleep or self.testSleep):
                     # Stops processes
-                    processEnd(processes, debug, verbose)
+                    self.processEnd()
                     isStopped = True
 
                     # this fixes the event that it is past midnight
@@ -147,10 +158,10 @@ class Device(object):
                     morningDate = datetime(currentDay.year,
                                            currentDay.month,
                                            currentDay.day + differentDay,
-                                           hour=morning.hour,
-                                           minute=morning.minute,
-                                           second=morning.second,
-                                           microsecond=morning.microsecond,
+                                           hour=self.morning.hour,
+                                           minute=self.morning.minute,
+                                           second=self.morning.second,
+                                           microsecond=self.morning.microsecond,
                                            tzinfo=pytz.timezone(
                                                "America/Denver")
                                            )
@@ -164,7 +175,7 @@ class Device(object):
                             print("going to sleep", diff.total_seconds(), diff)
                         sleep(diff.total_seconds())  # sleeps until morning
 
-                if verbose:
+                if self.verbose:
                     print("isStopped=")
                     print(isStopped)
 
@@ -172,7 +183,7 @@ class Device(object):
                     # restarts processes if time to display
                     if verbose:
                         print("starting processes")
-                    processes = processStart(url, client, expiration)
+                    processes = self.processStart()
                     isStopped = False  # resets
 
                 sleep(30)  # pauses for 30 seconds before restarting loop
@@ -184,55 +195,19 @@ class Device(object):
 
 
 if __name__ == '__main__':
-    NAME = "main.py"
-    LOCATION = re.sub(NAME, "", sys.argv[0])
-    debug = False
-    verbose = False
-
-    # loads config file (config)
-    try:
-        with open(LOCATION + 'config.json', 'r') as f:
-            config = json.load(f)
-    except IOError:
-        print("error missing config file")
-        exit(-1)
-
+    d = Device()
     # processes command line arguments
     for i in sys.argv[1:]:
-        if(i == "-d"):
-            print('Entering Debug mode')
-            debug = True
-
-        elif(i == "-l"):  # makes server local
+        if(i == "-l"):  # makes server local
             print('using local server')
-            config['URL'] = 'http://127.0.0.1:5000'
-
-        elif(i == "-u"):  # This sets up test data
-            print('uploading test data')
-            messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
-
-            def postMessage(postData, url, verbose=False):
-                r = requests.post(url=url, json=postData)
-                print(r)
-                return r
-
-            for i in messageList:
-                postProcess = MyThread(postMessage, postData={
-                                       'message': i, '_to': 'Matt'})
-                postProcess.start()
-
-        elif(i == "-e"):  # This sets up test data
-            print('setting small expiration date for database entries')
-            config['EXPIRATION'] = 5 * 60
+            d.config['URL'] = 'http://127.0.0.1:5000'
 
         elif(i == "-s"):  # This sets up test data
             print('setting sleep variable off')
-            config['SLEEP'] = False
+            d.config['SLEEP'] = False
 
         elif(i == "-v"):  # makes server local
             print('verbose')
-            verbose = True
-    # starts program
-    d = Device(config['URL'], config['CLIENT'],
-               config['EXPIRATION'], verbose=False)
-    d.main(config['MORNING'], config['EVENING'])
+            d.verbose = True
+
+    d.main()

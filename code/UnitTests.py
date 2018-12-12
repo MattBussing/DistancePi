@@ -22,6 +22,24 @@ class TestAdd(unittest.TestCase):
     delJson = {'message': 'value'}
     postJson = {'message': 'value', '_to': 'testing'}
 
+    # elif(i == "-u"):  # This sets up test data
+    #      print('uploading test data')
+    #      d.messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
+    #
+    #      def postMessage(postData, url, verbose=False):
+    #          r = requests.post(url=url, json=postData)
+    #          print(r)
+    #          return r
+    #
+    #      for i in messageList:
+    #          postProcess = MyThread(postMessage, postData={
+    #                                 'message': i, '_to': 'Matt'})
+    #          postProcess.start()
+    #
+    #  elif(i == "-e"):  # This sets up test data
+    #      print('setting small expiration date for database entries')
+    #      d.config['EXPIRATION'] = 5 * 60
+
     def deleteMessage(self):
         return requests.delete(url=self.delUrl, json=self.delJson)
 
