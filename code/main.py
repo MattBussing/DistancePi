@@ -41,7 +41,7 @@ class Device(object):
         self.client = config['CLIENT']
         self.expiration = config['EXPIRATION']
 
-        print(self.onComputer)
+        print(self.onComputer, not self.onComputer)
         if not self.onComputer:
             from sense_hat import ACTION_HELD, ACTION_PRESSED, ACTION_RELEASED, SenseHat
             self.senseHat = SenseHat()
@@ -190,8 +190,8 @@ class Device(object):
                 rn = currentDay.time()
                 # This checks to see if we want to display messages right now (rn)
                 if self.verbose:
-                    print(not(rn < self.evening and rn > self.morning)
-                          and self.sleepOn or self.testSleep)
+                    print(not(rn < self.evening and rn > self.morning) and
+                          self.sleepOn or self.testSleep)
                     print(rn < self.evening, rn > self.morning,
                           self.sleepOn, self.testSleep)
 
