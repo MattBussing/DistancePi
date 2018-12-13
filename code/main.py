@@ -107,12 +107,15 @@ class Device(object):
             def pushed_right(event):
                 pass
 
+            def refresh(event):
+                self.senseHat.clear()
+
             self.senseHat.stick.direction_up = pushed_up
             self.senseHat.stick.direction_down = pushed_down
             self.senseHat.stick.direction_left = pushed_left
             self.senseHat.stick.direction_right = pushed_right
             self.senseHat.stick.direction_any = refresh
-            self.senseHat.clear()
+            refresh()
             pause()
 
     def getMessages(self):
@@ -179,8 +182,8 @@ class Device(object):
                 rn = currentDay.time()
                 # This checks to see if we want to display messages right now (rn)
                 if self.verbose:
-                    print(not(rn < self.evening and rn > self.morning)
-                          and self.sleepOn or self.testSleep)
+                    print(not(rn < self.evening and rn > self.morning) and
+                          self.sleepOn or self.testSleep)
                     print(rn < self.evening, rn > self.morning,
                           self.sleepOn, self.testSleep)
 
