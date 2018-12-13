@@ -13,10 +13,11 @@ from my_threads import MyThread, Repeat
 
 
 class Device(object):
-    def __init__(self, name="main.py", verbose=False, testSleep=False, onComputer=False, tests=False):
+    def __init__(self, name="main.py", verbose=False, testSleep=False, onComputer=False, tests=False, sleepOn=False):
         self.verbose = verbose
         self.testSleep = testSleep
         self.onComputer = onComputer
+        self.sleepOn = sleepOn
         self.messageList = ["Messages not updated yet"]
         self.tests = tests
         if tests:
@@ -149,7 +150,7 @@ class Device(object):
                 currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
                 rn = currentDay.time()
                 # This checks to see if we want to display messages right now (rn)
-                if(not(rn < self.evening and rn > self.morning) and willSleep or self.testSleep):
+                if(not(rn < self.evening and rn > self.morning) and self.sleepOn or self.testSleep):
                     # Stops processes
                     self.processEnd()
                     isStopped = True
