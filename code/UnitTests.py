@@ -53,7 +53,7 @@ class TestAdd(unittest.TestCase):
 
     def test_rpi(self):
         print("rpi")
-        d = Device(name="UnitTests.py", tests=True, onComputer=False)
+        d = Device(name="UnitTests.py", tests=True)
         self.device(d)
         self.assertEqual(d.main().sort(), self.messageList.sort())
 

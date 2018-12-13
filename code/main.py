@@ -48,7 +48,7 @@ class Device(object):
 
     def display(self):
         for i in self.messageList:
-            displayHelper(i)
+            self.displayHelper(i)
 
     def displayHelper(self, phrase):
         if self.onComputer:
