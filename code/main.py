@@ -47,10 +47,14 @@ class Device(object):
         self.startProcesses()
 
     def display(self):
+        print("displaying")
         if self.onComputer:
+            print("if")
             displayFunction = print
         else:
+            print("else")
             displayFunction = self.senseHat.show_message
+        print('messages')
         for i in self.messageList:
             displayFunction(i)
 
