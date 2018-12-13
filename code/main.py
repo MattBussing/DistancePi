@@ -17,7 +17,6 @@ class Device(object):
     def __init__(self, name="main.py", verbose=False, testSleep=False, onComputer=False, tests=False, sleepOn=False):
         self.verbose = verbose
         self.testSleep = testSleep
-        print(onComputer, "computer")
         self.onComputer = onComputer
         self.sleepOn = sleepOn
         self.tests = tests
@@ -49,16 +48,10 @@ class Device(object):
         self.startProcesses()
 
     def display(self):
-        print("displaying")
-        print(self.onComputer)
-
         if self.onComputer:
-            print("if")
             displayFunction = print
         else:
-            print("else")
             displayFunction = self.senseHat.show_message
-        print('messages')
         for i in self.messageList:
             displayFunction(i)
 
