@@ -24,23 +24,10 @@ sudo pip3 install -U requests
 
 sudo apt-get install sense-hat
 
-#sets up rc.local
-cd DistancePi
-echo '{
-    "DEBUG": false,
-    "SLEEP": true,
-    "CLIENT":"Matt",
-    "URL":"https://distance-pi.herokuapp.com",
-    "EXPIRATION": 18000
-}' > code/config.json
-<<notes
+bash scripts/configSetup.sh
 
 bash linkRC.sh
 
 sudo systemctl daemon-reload
-
 sudo reboot
-
-StandardOutput=tty
-sudo systemctl status myscript.service
-notes
+# sudo systemctl status myscript.service
