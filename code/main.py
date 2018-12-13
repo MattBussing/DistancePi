@@ -121,7 +121,7 @@ class Device(object):
             self.senseHat.stick.direction_right = pushed_right
             self.senseHat.stick.direction_any = refresh
             refresh()
-            pause()
+            # pause()
 
     def getMessages(self):
         if self.verbose:
