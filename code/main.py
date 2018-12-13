@@ -79,7 +79,7 @@ class Device(object):
     def senseHatOptions(self):
         if not self.onComputer:
             # TODO: fix this so that no error is thrown
-            event = self.self.stick.wait_for_event()
+            event = self.senseHat.stick.wait_for_event()
             if verbose:
                 print(event)
             if(event.direction == 'up'):
