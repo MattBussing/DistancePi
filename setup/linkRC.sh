@@ -7,3 +7,5 @@ fi
 
 sudo ln -sf /home/pi/DistancePi/setup/rc.local rc.local
 sudo chmod 777 /etc/rc.local
+
+ls -l /etc/rc.local 
