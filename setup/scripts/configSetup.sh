@@ -8,7 +8,7 @@ echo '{
     "EXPIRATION": 18000,
     "MORNING": 7,
     "EVENING": 22
-}' > /home/pi/DistancePi/code/config.json
+}' > /home/pi/DistancePi/config/config.json
 #
 # {
 #   "SLEEP": true,
