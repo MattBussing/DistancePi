@@ -35,10 +35,6 @@ echo '{
 }' > code/config.json
 <<notes
 
-# checks to see if there is a back up for the file
-if [ ! -f /etc/rclocalBackup.txt ]; then
-    sudo cp /etc/rc.local /etc/rclocalBackup.txt
-fi
 bash linkRC.sh
 
 sudo systemctl daemon-reload
