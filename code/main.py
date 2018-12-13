@@ -108,7 +108,7 @@ class Device(object):
             def pushed_right(event):
                 pass
 
-            def refresh(event):
+            def refresh():
                 self.senseHat.clear()
 
             self.senseHat.stick.direction_up = pushed_up
