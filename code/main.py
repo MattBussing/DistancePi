@@ -17,6 +17,7 @@ class Device(object):
     def __init__(self, name="main.py", verbose=False, testSleep=False, onComputer=False, tests=False, sleepOn=False):
         self.verbose = verbose
         self.testSleep = testSleep
+        print(onComputer, "computer")
         self.onComputer = onComputer
         self.sleepOn = sleepOn
         self.tests = tests
@@ -189,8 +190,8 @@ class Device(object):
                 rn = currentDay.time()
                 # This checks to see if we want to display messages right now (rn)
                 if self.verbose:
-                    print(not(rn < self.evening and rn > self.morning) and
-                          self.sleepOn or self.testSleep)
+                    print(not(rn < self.evening and rn > self.morning)
+                          and self.sleepOn or self.testSleep)
                     print(rn < self.evening, rn > self.morning,
                           self.sleepOn, self.testSleep)
 
