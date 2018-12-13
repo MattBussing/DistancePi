@@ -25,9 +25,6 @@ class Device(object):
         if tests:
             print("tests active")
 
-        self.processes = {'get': Repeat(30, self.getMessages), 'print': Repeat(3, self.display), 'options':
-                          MyThread(self.senseHatOptions)}
-
         configLocation = re.sub(
             "code/" + name, "config/config.json", sys.argv[0])
         # loads config file (config)
@@ -48,10 +45,7 @@ class Device(object):
             from sense_hat import SenseHat
             self.senseHat = SenseHat()
 
-        self.processes['print'] = Repeat(3, self.display)
-
-        for i, j in self.processes.items():
-            j.start()
+        self.startProcesses()
 
     def display(self):
         if self.onComputer:
@@ -61,22 +55,35 @@ class Device(object):
         for i in self.messageList:
             displayFunction(i)
 
-    def processEnd(self):
+    def stopProcesses(self):
         self.processes['print'].stop()
         self.processes['get'].stop()
-        # self.processes['options'].stop()
-
-    def shutdown(self):
-        self.processes['print'].stop()
-        self.processes['get'].stop()
-        # self.processes['options']
+        self.processes['options']._stop()
+        if self.verbose:
+            print("processes killed")
         if not self.onComputer:
             self.senseHat.clear()
+        self.isStopped = True
+
+    def startProcesses(self):
+        self.processes = {
+            'get': Repeat(30, self.getMessages),
+            'print': Repeat(3, self.display),
+            'options': MyThread(self.senseHatOptions)
+        }
+        if self.verbose:
+            print("starting processes")
+        self.processes['print'].start()
+        self.processes['get'].start()
+        self.processes['options'].start()
+        self.isStopped = False
+
+    def shutdown(self):
+        self.stopProcesses()
+        if not self.onComputer:
             self.senseHat.show_message("shutting down")
         else:
             print("shutting down")
-        if self.verbose:
-            print("processes killed")
         os.system('sudo shutdown now')
 
     def senseHatOptions(self):
@@ -145,21 +152,24 @@ class Device(object):
                                  tzinfo=pytz.timezone("America/Denver")
                                  )
         # Loops until time for bed then it goes to sleep till morning
-        isStopped = False  # flags if the process stops
         try:
             i = 0
             while True:
                 currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
                 rn = currentDay.time()
                 # This checks to see if we want to display messages right now (rn)
-                if(not(rn < self.evening and rn > self.morning) and self.sleepOn or self.testSleep):
-                    # Stops processes
-                    self.processEnd()
-                    isStopped = True
+                if self.verbose:
+                    print(not(rn < self.evening and rn > self.morning) and
+                          self.sleepOn or self.testSleep)
+                    print(rn < self.evening, rn > self.morning,
+                          self.sleepOn, self.testSleep)
+
+                if not(rn < self.evening and rn > self.morning) and self.sleepOn or self.testSleep:
+                    self.stopProcesses()
 
                     # this fixes the event that it is past midnight
                     differentDay = 0
-                    if currentDay >= eveningD:
+                    if currentDay >= self.eveningD:
                         differentDay = 1
 
                     morningDate = datetime(currentDay.year,
@@ -173,38 +183,36 @@ class Device(object):
                                                "America/Denver")
                                            )
 
-                    if self.testSleep:
-                        sleep(5)
-                        self.testSleep = False
-                    else:
-                        diff = abs(morningDate - currentDay)
-                        if verbose:
-                            print("going to sleep", diff.total_seconds(), diff)
+                    diff = abs(morningDate - currentDay)
+                    if self.verbose:
+                        print("going to sleep", diff.total_seconds(), diff)
+
+                    # this is so you can test without waiting forever
+                    if not self.tests:
                         sleep(diff.total_seconds())  # sleeps until morning
+                    else:
+                        print("testing sleep")
+                        sleep(0.01)
+                        print("sleeping for", diff.total_seconds(), diff)
 
                 if self.verbose:
-                    print("isStopped=")
-                    print(isStopped)
+                    print("Flag isStopped=", self.isStopped)
 
-                if isStopped:  # checks if processes were killed
-                    # restarts processes if time to display
-                    if verbose:
-                        print("starting processes")
-                    processes = self.processStart()
-                    isStopped = False  # resets
+                if self.isStopped:
+                    self.startProcesses()
 
                 if self.tests:
                     sleep(1)
                     print("next", i)
-                    if i > 5:
-                        self.processEnd()
+                    if i > 3:
+                        self.stopProcesses()
                         return self.messageList
                     i += 1
                 else:
                     sleep(30)  # pauses for 30 seconds before restarting loop
         except KeyboardInterrupt:
             print('KeyboardInterrupt received. Exiting.')
-            self.processEnd()
+            self.stopProcesses()
             exit()
 
 
