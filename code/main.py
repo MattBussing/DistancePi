@@ -99,7 +99,7 @@ class Device(object):
                     self.shutdown()
 
             def pushed_down(event):
-                if event.action != ACTION_RELEASED:
+                if event.action != 'released':
                     print("pressed down")
                 # pass
 
