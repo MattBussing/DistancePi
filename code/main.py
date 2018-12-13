@@ -4,14 +4,13 @@ import os
 import re
 import sys
 from datetime import datetime, time
+from signal import pause
 from time import sleep
 
 import pytz
 import requests
 
 from my_threads import MyThread, Repeat
-
-# TODO: FIX parallel process
 
 
 class Device(object):
@@ -20,8 +19,8 @@ class Device(object):
         self.testSleep = testSleep
         self.onComputer = onComputer
         self.sleepOn = sleepOn
-        self.messageList = ["Messages not updated yet"]
         self.tests = tests
+        self.messageList = ["Messages not updated yet"]
         if tests:
             print("tests active")
 
@@ -42,7 +41,7 @@ class Device(object):
         self.expiration = config['EXPIRATION']
 
         if not self.onComputer:
-            from sense_hat import SenseHat
+            from sense_hat import ACTION_HELD, ACTION_PRESSED, ACTION_RELEASED, SenseHat
             self.senseHat = SenseHat()
 
         self.startProcesses()
@@ -89,11 +88,32 @@ class Device(object):
     def senseHatOptions(self):
         if not self.onComputer:
             # TODO: fix this so that no error is thrown
-            event = self.senseHat.stick.wait_for_event()
-            if verbose:
-                print(event)
-            if(event.direction == 'up'):
-                self.shutdown()
+            # event = self.senseHat.stick.wait_for_event()
+            # if verbose:
+            #     print(event)
+            # if(event.direction == 'up'):
+            #     self.shutdown()
+
+            def pushed_up(event):
+                if event.action != ACTION_RELEASED:
+                    self.shutdown()
+
+            def pushed_down(event):
+                pass
+
+            def pushed_left(event):
+                pass
+
+            def pushed_right(event):
+                pass
+
+            self.senseHat.stick.direction_up = pushed_up
+            self.senseHat.stick.direction_down = pushed_down
+            self.senseHat.stick.direction_left = pushed_left
+            self.senseHat.stick.direction_right = pushed_right
+            self.senseHat.stick.direction_any = refresh
+            self.senseHat.clear()
+            pause()
 
     def getMessages(self):
         if self.verbose:
@@ -159,8 +179,8 @@ class Device(object):
                 rn = currentDay.time()
                 # This checks to see if we want to display messages right now (rn)
                 if self.verbose:
-                    print(not(rn < self.evening and rn > self.morning) and
-                          self.sleepOn or self.testSleep)
+                    print(not(rn < self.evening and rn > self.morning)
+                          and self.sleepOn or self.testSleep)
                     print(rn < self.evening, rn > self.morning,
                           self.sleepOn, self.testSleep)
 
@@ -227,10 +247,6 @@ if __name__ == '__main__':
         elif(i == "-s"):  # This sets up test data
             print('setting sleep variable off')
             d.config['SLEEP'] = False
-
-        # elif(i == "-c"):
-        #     print('onComputer')
-        #     d = False
 
         elif(i == "-v"):  # makes server local
             print('verbose')

@@ -43,18 +43,18 @@ class TestAdd(unittest.TestCase):
         self.device(d)
         self.assertEqual(d.main().sort(), self.messageList.sort())
 
-    def test_rpi(self):
-        print("rpi")
-        d = Device(name="UnitTests.py", tests=True, onComputer=False)
-        self.device(d)
-        self.assertEqual(d.main().sort(), self.messageList.sort())
-
     def test_sleep_variable(self):
         print("\n##############sleep_variable")
         d = Device(name="UnitTests.py", tests=True,
                    sleepOn=True, onComputer=True, verbose=True)
         self.device(d)
         print(self.messageList)
+        self.assertEqual(d.main().sort(), self.messageList.sort())
+
+    def test_rpi(self):
+        print("rpi")
+        d = Device(name="UnitTests.py", tests=True, onComputer=False)
+        self.device(d)
         self.assertEqual(d.main().sort(), self.messageList.sort())
 
 
