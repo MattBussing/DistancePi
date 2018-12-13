@@ -119,8 +119,8 @@ class Device(object):
             self.senseHat.stick.direction_down = pushed_down
             self.senseHat.stick.direction_left = pushed_left
             self.senseHat.stick.direction_right = pushed_right
-            self.senseHat.stick.direction_any = refresh
-            refresh()
+            # self.senseHat.stick.direction_any = refresh
+            # refresh()
             # pause()
 
     def getMessages(self):
