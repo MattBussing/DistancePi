@@ -39,8 +39,7 @@ echo '{
 if [ ! -f /etc/rclocalBackup.txt ]; then
     sudo cp /etc/rc.local /etc/rclocalBackup.txt
 fi
-sudo cp ~/DistancePi/setup/rc.local /etc/rc.local
-sudo chmod +x /etc/rc.local
+bash linkRC.sh
 
 sudo systemctl daemon-reload
 
