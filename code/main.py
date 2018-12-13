@@ -81,11 +81,8 @@ class Device(object):
 
     def shutdown(self):
         self.stopProcesses()
-        if not self.onComputer:
-            sleep(5)  # needed to stop everything
-            self.senseHat.show_message("shutting down")
-        else:
-            print("shutting down")
+        # sleep(15)
+        self.display("shutting down")
         os.system('sudo shutdown now')
 
     def senseHatOptions(self):
