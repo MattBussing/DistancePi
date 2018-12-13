@@ -41,7 +41,7 @@ class Device(object):
         self.expiration = config['EXPIRATION']
 
         if not self.onComputer:
-            from sense_hat import ACTION_HELD, ACTION_PRESSED, ACTION_RELEASED, SenseHat
+            from sense_hat import SenseHat
             self.senseHat = SenseHat()
 
         self.startProcesses()
@@ -57,7 +57,7 @@ class Device(object):
     def stopProcesses(self):
         self.processes['print'].stop()
         self.processes['get'].stop()
-        self.processes['options']._stop()
+        self.processes['options'].stop()
         if self.verbose:
             print("processes killed")
         if not self.onComputer:
@@ -93,22 +93,23 @@ class Device(object):
             #     print(event)
             # if(event.direction == 'up'):
             #     self.shutdown()
+            # ACTION_HELD, ACTION_PRESSED, ACTION_RELEASED,
 
             def pushed_up(event):
-                if event.action != ACTION_RELEASED:
+                if event.action != 'released':
                     self.shutdown()
 
             def pushed_down(event):
                 if event.action != 'released':
                     print("pressed down")
-                # pass
 
             def pushed_left(event):
-                print("pressed left")
-                pass
+                if event.action != 'released':
+                    print("pressed left")
 
             def pushed_right(event):
-                pass
+                if event.action != 'released':
+                    print("pressed right")
 
             def refresh():
                 self.senseHat.clear()
@@ -185,8 +186,8 @@ class Device(object):
                 rn = currentDay.time()
                 # This checks to see if we want to display messages right now (rn)
                 if self.verbose:
-                    print(not(rn < self.evening and rn > self.morning) and
-                          self.sleepOn or self.testSleep)
+                    print(not(rn < self.evening and rn > self.morning)
+                          and self.sleepOn or self.testSleep)
                     print(rn < self.evening, rn > self.morning,
                           self.sleepOn, self.testSleep)
 
