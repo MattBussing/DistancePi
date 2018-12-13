@@ -45,6 +45,7 @@ class Device(object):
             self.senseHat = SenseHat()
 
         self.startProcesses()
+        self.senseHatOptions()
 
     def display(self):
         if self.onComputer:
@@ -57,7 +58,7 @@ class Device(object):
     def stopProcesses(self):
         self.processes['print'].stop()
         self.processes['get'].stop()
-        self.processes['options'].stop()
+        # self.processes['options'].stop()
         if self.verbose:
             print("processes killed")
         if not self.onComputer:
@@ -67,14 +68,14 @@ class Device(object):
     def startProcesses(self):
         self.processes = {
             'get': Repeat(30, self.getMessages),
-            'print': Repeat(3, self.display),
-            'options': MyThread(self.senseHatOptions)
+            'print': Repeat(3, self.display)  # ,
+            # 'options': MyThread(self.senseHatOptions)
         }
         if self.verbose:
             print("starting processes")
         self.processes['print'].start()
         self.processes['get'].start()
-        self.processes['options'].start()
+        # self.processes['options'].start()
         self.isStopped = False
 
     def shutdown(self):
@@ -186,8 +187,8 @@ class Device(object):
                 rn = currentDay.time()
                 # This checks to see if we want to display messages right now (rn)
                 if self.verbose:
-                    print(not(rn < self.evening and rn > self.morning)
-                          and self.sleepOn or self.testSleep)
+                    print(not(rn < self.evening and rn > self.morning) and
+                          self.sleepOn or self.testSleep)
                     print(rn < self.evening, rn > self.morning,
                           self.sleepOn, self.testSleep)
 
