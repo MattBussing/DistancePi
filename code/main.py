@@ -11,6 +11,8 @@ import requests
 
 from my_threads import MyThread, Repeat
 
+# TODO: FIX parallel process
+
 
 class Device(object):
     def __init__(self, name="main.py", verbose=False, testSleep=False, onComputer=False, tests=False, sleepOn=False):

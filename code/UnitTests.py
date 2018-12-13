@@ -20,67 +20,35 @@ class TestAdd(unittest.TestCase):
     delJson = {'message': 'value'}
     postJson = {'message': 'value', '_to': 'testing'}
 
-    # elif(i == "-u"):  # This sets up test data
-    #      print('uploading test data')
-    #      d.messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
-    #
-    #      def postMessage(postData, url, verbose=False):
-    #          r = requests.post(url=url, json=postData)
-    #          print(r)
-    #          return r
-    #
-    #      for i in messageList:
-    #          postProcess = MyThread(postMessage, postData={
-    #                                 'message': i, '_to': 'Matt'})
-    #          postProcess.start()
-    #
-    #  elif(i == "-e"):  # This sets up test data
-    #      print('setting small expiration date for database entries')
-    #      d.config['EXPIRATION'] = 5 * 60
-
     def deleteMessage(self):
         return requests.delete(url=self.delUrl, json=self.delJson)
 
     def postMessage(self, postData):
         return requests.post(url=self.postUrl, json=postData)
 
+    def device(self, d):
+        m = d.main()
+        print('uploading test data')
+        messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
+        for i in messageList:
+            postProcess = MyThread(self.postMessage, postData={
+                                   'message': i, '_to': self.test})
+            postProcess.start()
+
     def test_normal_run(self):
         # test a normal run
         d = Device(name="UnitTests.py", tests=True, onComputer=True)
-        m = d.main()
-        print('uploading test data')
-        messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
-        for i in messageList:
-            postProcess = MyThread(self.postMessage, postData={
-                                   'message': i, '_to': self.test})
-            postProcess.start()
-
+        self.device(d)
         self.assertEqual(d.main().sort(), messageList.sort())
 
-    def test_normal_rpi(self):
-        # test a normal run
+    def test_rpi(self):
         d = Device(name="UnitTests.py", tests=True, onComputer=False)
-        m = d.main()
-        print('uploading test data')
-        messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
-        for i in messageList:
-            postProcess = MyThread(self.postMessage, postData={
-                                   'message': i, '_to': self.test})
-            postProcess.start()
-
+        self.device(d)
         self.assertEqual(d.main().sort(), messageList.sort())
 
     def test_sleep_variable(self):
-        # test a normal run
         d = Device(name="UnitTests.py", tests=True, sleepOn=True)
-        m = d.main()
-        print('uploading test data')
-        messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
-        for i in messageList:
-            postProcess = MyThread(self.postMessage, postData={
-                                   'message': i, '_to': self.test})
-            postProcess.start()
-
+        self.device(d)
         self.assertEqual(d.main().sort(), messageList.sort())
 
 
