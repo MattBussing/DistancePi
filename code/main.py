@@ -230,7 +230,7 @@ class Device(object):
 
 
 if __name__ == '__main__':
-    d = Device()
+    d = Device(sleepOn=True)
     # processes command line arguments
     for i in sys.argv[1:]:
         if(i == "-l"):  # makes server local
