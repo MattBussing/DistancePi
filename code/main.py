@@ -82,6 +82,7 @@ class Device(object):
     def shutdown(self):
         self.stopProcesses()
         if not self.onComputer:
+            sleep(5)  # needed to stop everything
             self.senseHat.show_message("shutting down")
         else:
             print("shutting down")
@@ -188,8 +189,8 @@ class Device(object):
                 rn = currentDay.time()
                 # This checks to see if we want to display messages right now (rn)
                 if self.verbose:
-                    print(not(rn < self.evening and rn > self.morning) and
-                          self.sleepOn or self.testSleep)
+                    print(not(rn < self.evening and rn > self.morning)
+                          and self.sleepOn or self.testSleep)
                     print(rn < self.evening, rn > self.morning,
                           self.sleepOn, self.testSleep)
 
