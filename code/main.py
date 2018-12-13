@@ -40,6 +40,7 @@ class Device(object):
         self.client = config['CLIENT']
         self.expiration = config['EXPIRATION']
 
+        print(self.onComputer)
         if not self.onComputer:
             from sense_hat import ACTION_HELD, ACTION_PRESSED, ACTION_RELEASED, SenseHat
             self.senseHat = SenseHat()
@@ -48,6 +49,8 @@ class Device(object):
 
     def display(self):
         print("displaying")
+        print(self.onComputer)
+
         if self.onComputer:
             print("if")
             displayFunction = print
