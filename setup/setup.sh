@@ -24,6 +24,7 @@ sudo pip3 install -U requests
 
 sudo apt-get install sense-hat
 
+cd DistancePi
 bash scripts/configSetup.sh
 
 bash linkRC.sh

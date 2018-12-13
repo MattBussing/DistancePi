@@ -1,5 +1,5 @@
 #sets up rc.local
-cd DistancePi
+echo "making config"
 echo '{
     "SLEEP": true,
     "CLIENT":"/Matt",
