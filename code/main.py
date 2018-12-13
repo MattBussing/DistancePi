@@ -51,14 +51,10 @@ class Device(object):
             self.displayHelper(i)
 
     def displayHelper(self, phrase):
-        # here is weird way to make sure there aren't multiple displaying
-        while not self.displaying:
-            self.displaying = True
-            if self.onComputer:
-                print(phrase)
-            else:
-                self.senseHat.show_message(phrase)
-            self.displaying = False
+        if self.onComputer:
+            print(phrase)
+        else:
+            self.senseHat.show_message(phrase)
 
     def stopProcesses(self):
         self.processes['print'].stop()
