@@ -43,7 +43,7 @@ class TestAdd(unittest.TestCase):
 
     def postMessage(self, postData):
         return requests.post(url=self.postUrl, json=postData)
-    """
+
     def test_normal_run(self):
         # test a normal run
         d = Device(name="UnitTests.py", tests=True, onComputer=True)
@@ -56,8 +56,6 @@ class TestAdd(unittest.TestCase):
             postProcess.start()
 
         self.assertEqual(d.main().sort(), messageList.sort())
-
-    """
 
     def test_normal_rpi(self):
         # test a normal run
@@ -72,15 +70,18 @@ class TestAdd(unittest.TestCase):
 
         self.assertEqual(d.main().sort(), messageList.sort())
 
-        # def test_sleep_exit(self):
-        #     # python code/main.py -d -t
-        #     pass
-        #
-        # def test_sleep(self):
-        #     pass
-        # elif(i == "-t"):  # makes server local
-        #     print('testing sleep')
-        #     testSleep = True
+    def test_sleep_variable(self):
+        # test a normal run
+        d = Device(name="UnitTests.py", tests=True, sleepOn=True)
+        m = d.main()
+        print('uploading test data')
+        messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
+        for i in messageList:
+            postProcess = MyThread(self.postMessage, postData={
+                                   'message': i, '_to': self.test})
+            postProcess.start()
+
+        self.assertEqual(d.main().sort(), messageList.sort())
 
 
 if __name__ == '__main__':
