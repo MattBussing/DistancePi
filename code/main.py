@@ -4,7 +4,6 @@ import os
 import re
 import sys
 from datetime import datetime, time
-from signal import pause
 from time import sleep
 
 import pytz
@@ -48,17 +47,18 @@ class Device(object):
         self.senseHatOptions()
 
     def display(self):
-        if self.onComputer:
-            displayFunction = print
-        else:
-            displayFunction = self.senseHat.show_message
         for i in self.messageList:
-            displayFunction(i)
+            displayHelper(i)
+
+    def displayHelper(self, phrase):
+        if self.onComputer:
+            print(phrase)
+        else:
+            self.senseHat.show_message(phrase)
 
     def stopProcesses(self):
         self.processes['print'].stop()
         self.processes['get'].stop()
-        # self.processes['options']._stop()
         if self.verbose:
             print("processes killed")
         if not self.onComputer:
@@ -69,32 +69,21 @@ class Device(object):
         self.processes = {
             'get': Repeat(30, self.getMessages),
             'print': Repeat(3, self.display)
-            # 'options': self.senseHatOptions
-
         }
         if self.verbose:
             print("starting processes")
         self.processes['print'].start()
         self.processes['get'].start()
-        # self.processes['options']()
         self.isStopped = False
 
     def shutdown(self):
         self.stopProcesses()
         # sleep(15)
-        self.display("shutting down")
+        self.displayHelper("shutting down")
         os.system('sudo shutdown now')
 
     def senseHatOptions(self):
         if not self.onComputer:
-            # TODO: fix this so that no error is thrown
-            # event = self.senseHat.stick.wait_for_event()
-            # if verbose:
-            #     print(event)
-            # if(event.direction == 'up'):
-            #     self.shutdown()
-            # ACTION_HELD, ACTION_PRESSED, ACTION_RELEASED,
-
             def pushed_up(event):
                 if event.action != 'released':
                     self.shutdown()
@@ -118,9 +107,6 @@ class Device(object):
             self.senseHat.stick.direction_down = pushed_down
             self.senseHat.stick.direction_left = pushed_left
             self.senseHat.stick.direction_right = pushed_right
-            # self.senseHat.stick.direction_any = refresh
-            # refresh()
-            # pause()
 
     def getMessages(self):
         if self.verbose:
