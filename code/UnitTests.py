@@ -43,12 +43,25 @@ class TestAdd(unittest.TestCase):
 
     def postMessage(self, postData):
         return requests.post(url=self.postUrl, json=postData)
-
+    """
     def test_normal_run(self):
-        """
-            test a normal run
-        """
+        # test a normal run
         d = Device(name="UnitTests.py", tests=True, onComputer=True)
+        m = d.main()
+        print('uploading test data')
+        messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
+        for i in messageList:
+            postProcess = MyThread(self.postMessage, postData={
+                                   'message': i, '_to': self.test})
+            postProcess.start()
+
+        self.assertEqual(d.main().sort(), messageList.sort())
+
+    """
+
+    def test_normal_rpi(self):
+        # test a normal run
+        d = Device(name="UnitTests.py", tests=True, onComputer=False)
         m = d.main()
         print('uploading test data')
         messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
