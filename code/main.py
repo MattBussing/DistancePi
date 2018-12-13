@@ -14,7 +14,7 @@ from my_threads import MyThread, Repeat
 
 
 class Device(object):
-    def __init__(self, name="main.py", verbose=False, testSleep=False, onComputer=False, tests=False, sleepOn=False):
+    def __init__(self, name="main.py", verbose=False, testSleep=False, onComputer=True, tests=False, sleepOn=False):
         self.verbose = verbose
         self.testSleep = testSleep
         self.onComputer = onComputer
