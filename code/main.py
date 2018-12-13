@@ -18,18 +18,18 @@ class Device(object):
         self.testSleep = testSleep
         self.onComputer = onComputer
         self.messageList = ["Messages not updated yet"]
-        self.name = name
         self.tests = tests
         if tests:
             print("tests active")
-        self.location = re.sub(self.name, "", sys.argv[0])
 
         self.processes = {'get': Repeat(30, self.getMessages), 'print': Repeat(3, self.display), 'options':
                           MyThread(self.senseHatOptions)}
 
+        configLocation = re.sub(
+            "code/" + name, "config/config.json", sys.argv[0])
         # loads config file (config)
         try:
-            with open(self.location + 'config.json', 'r') as f:
+            with open(configLocation, 'r') as f:
                 config = json.load(f)
         except IOError:
             print("error missing config file")
@@ -205,7 +205,7 @@ class Device(object):
 
 
 if __name__ == '__main__':
-    d = Device()
+    d = Device(onComputer=True)
     # processes command line arguments
     for i in sys.argv[1:]:
         if(i == "-l"):  # makes server local
@@ -215,6 +215,10 @@ if __name__ == '__main__':
         elif(i == "-s"):  # This sets up test data
             print('setting sleep variable off')
             d.config['SLEEP'] = False
+
+        # elif(i == "-c"):
+        #     print('onComputer')
+        #     d = False
 
         elif(i == "-v"):  # makes server local
             print('verbose')

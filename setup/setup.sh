@@ -21,13 +21,11 @@ sudo pip3 install -U pytz
 sudo pip3 install requests
 sudo pip3 install -U requests
 
-
 sudo apt-get install sense-hat
 
-cd DistancePi
-bash scripts/configSetup.sh
+bash /home/pi/DistancePi/setup/scripts/configSetup.sh
 
-bash linkRC.sh
+bash /home/pi/DistancePi/setup/scripts/linkRC.sh
 
 sudo systemctl daemon-reload
 sudo reboot

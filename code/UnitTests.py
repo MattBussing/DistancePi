@@ -48,7 +48,7 @@ class TestAdd(unittest.TestCase):
         """
             test a normal run
         """
-        d = Device(name="UnitTests.py", tests=True)
+        d = Device(name="UnitTests.py", tests=True, onComputer=True)
         m = d.main()
         print('uploading test data')
         messageList = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
