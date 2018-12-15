@@ -5,3 +5,4 @@ sudo chmod 644 /lib/systemd/system/DistancePi.service
 sudo systemctl daemon-reload
 sudo systemctl enable DistancePi.service
 # sudo systemctl status myscript.service
+# systemctl list-unit-files
