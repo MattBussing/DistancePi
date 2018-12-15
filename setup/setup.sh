@@ -3,6 +3,14 @@
 # for ssh add the file ssh to the boot folder
 
 # setup crontab with update.sh
+# crontab -e
+# cd
+# mkdir logs
+# cd logs
+# touch start
+# touch cronlog
+# 0 0 * * SAT sh /home/pi/DistancePi/setup/scripts/update.sh 2> /home/pi/logs/cronlog
+# 0 0 * * SAT echo "update" >> /home/pi/logs/start
 
 #install programs
 sudo apt-get update
