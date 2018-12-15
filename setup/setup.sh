@@ -23,10 +23,11 @@ sudo pip3 install -U requests
 
 sudo apt-get install sense-hat
 
+
 bash /home/pi/DistancePi/setup/scripts/configSetup.sh
 
 bash /home/pi/DistancePi/setup/scripts/linkRC.sh
 
-sudo systemctl daemon-reload
+bash $HOME/DistancePi/setup/scripts/daemonsetup.sh
+
 sudo reboot
-# sudo systemctl status myscript.service

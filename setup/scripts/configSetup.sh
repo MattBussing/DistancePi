@@ -1,4 +1,3 @@
-#sets up rc.local
 echo "making config"
 echo '{
     "SLEEP": true,
