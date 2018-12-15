@@ -9,6 +9,7 @@
 # cd logs
 # touch start
 # touch cronlog
+# put these lines in the file
 # 0 0 * * SAT sh /home/pi/DistancePi/setup/scripts/update.sh 2> /home/pi/logs/cronlog
 # 0 0 * * SAT echo "update" >> /home/pi/logs/start
 

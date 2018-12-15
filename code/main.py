@@ -37,7 +37,7 @@ class Device(object):
         self.evening = time(hour=config['EVENING'])
         self.url = config['URL']
         self.client = config['CLIENT']
-        self.expiration = config['EXPIRATION']
+        self.expiration = 122400  # 24*3600
 
         if not self.onComputer:
             from sense_hat import SenseHat
@@ -45,6 +45,8 @@ class Device(object):
 
         self.startProcesses()
         self.senseHatOptions()
+        self.dayBefore = None
+        self.updateTimes()
 
     def display(self):
         for i in self.messageList:
@@ -126,12 +128,17 @@ class Device(object):
                     postDate = pytz.utc.localize(postDate, is_dst=None)
 
                     # finds difference between when the item was posted and rn
-                    diff = datetime.now(tz=pytz.utc) - postDate
-
-                    if self.verbose:
-                        print(diff.total_seconds(), self.expiration)
-                    # deletes the message if it is too old and continues
-                    if diff.total_seconds() > self.expiration:
+                    # diff = datetime.now(tz=pytz.utc) - postDate
+                    #
+                    # if self.verbose:
+                    #     print(diff.total_seconds(), self.expiration)
+                    #
+                    # # deletes the message if it is too old and continues
+                    # # self.dayBefore
+                    # #
+                    # if diff.total_seconds() > self.expiration:
+                    # this deletes messages if they are a day ago
+                    if postDate < self.dayBefore:
                         self.DeleteMessages(i['message'])
                         continue
 
@@ -153,50 +160,61 @@ class Device(object):
         else:
             self.messageList = ["Server not working properly"]
 
-    def main(self):
-        currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
-        self.eveningD = datetime(currentDay.year,
-                                 currentDay.month,
-                                 currentDay.day,
+    def updateTimes(self):
+        # this fixes the event that it is past midnight
+        differentDay = 0
+        if self.currentDay >= self.eveningD:
+            differentDay = 1
+        self.currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
+        self.rn = self.currentDay.time()
+        # fix this
+        self.eveningD = datetime(self.currentDay.year,
+                                 self.currentDay.month,
+                                 self.currentDay.day,
                                  hour=self.evening.hour,
                                  minute=self.evening.minute,
                                  second=self.evening.second,
                                  microsecond=self.evening.microsecond,
                                  tzinfo=pytz.timezone("America/Denver")
                                  )
+        self.morningDate = datetime(self.currentDay.year,
+                                    self.currentDay.month,
+                                    self.currentDay.day + differentDay,
+                                    hour=self.morning.hour,
+                                    minute=self.morning.minute,
+                                    second=self.morning.second,
+                                    microsecond=self.morning.microsecond,
+                                    tzinfo=pytz.timezone("America/Denver")
+                                    )
+
+        self.dayBefore = datetime(self.currentDay.year,
+                                  self.currentDay.month,
+                                  self.currentDay.day + differentDay - 1,
+                                  hour=self.morning.hour,
+                                  minute=self.morning.minute,
+                                  second=self.morning.second,
+                                  microsecond=self.morning.microsecond,
+                                  tzinfo=pytz.timezone("America/Denver")
+                                  )
+
+    def main(self):
         # Loops until time for bed then it goes to sleep till morning
         try:
             i = 0
             while True:
-                currentDay = datetime.now(tz=pytz.timezone("America/Denver"))
-                rn = currentDay.time()
+                self.updateTimes()
                 # This checks to see if we want to display messages right now (rn)
                 if self.verbose:
-                    print(not(rn < self.evening and rn > self.morning)
-                          and self.sleepOn or self.testSleep)
-                    print(rn < self.evening, rn > self.morning,
+                    print(not(self.rn < self.evening and self.rn > self.morning) and
+                          self.sleepOn or self.testSleep)
+                    print(self.rn < self.evening, self.rn > self.morning,
                           self.sleepOn, self.testSleep)
+                    print("Flag isStopped=", self.isStopped)
 
-                if not(rn < self.evening and rn > self.morning) and self.sleepOn or self.testSleep:
+                if not(self.rn < self.evening and self.rn > self.morning) and self.sleepOn or self.testSleep:
                     self.stopProcesses()
 
-                    # this fixes the event that it is past midnight
-                    differentDay = 0
-                    if currentDay >= self.eveningD:
-                        differentDay = 1
-
-                    morningDate = datetime(currentDay.year,
-                                           currentDay.month,
-                                           currentDay.day + differentDay,
-                                           hour=self.morning.hour,
-                                           minute=self.morning.minute,
-                                           second=self.morning.second,
-                                           microsecond=self.morning.microsecond,
-                                           tzinfo=pytz.timezone(
-                                               "America/Denver")
-                                           )
-
-                    diff = abs(morningDate - currentDay)
+                    diff = abs(self.morningDate - self.currentDay)
                     if self.verbose:
                         print("going to sleep", diff.total_seconds(), diff)
 
@@ -207,9 +225,6 @@ class Device(object):
                         print("testing sleep")
                         sleep(0.01)
                         print("sleeping for", diff.total_seconds(), diff)
-
-                if self.verbose:
-                    print("Flag isStopped=", self.isStopped)
 
                 if self.isStopped:
                     self.startProcesses()
@@ -232,17 +247,16 @@ class Device(object):
 if __name__ == '__main__':
     d = Device(sleepOn=True)
     # processes command line arguments
-    for i in sys.argv[1:]:
-        if(i == "-l"):  # makes server local
-            print('using local server')
-            d.config['URL'] = 'http://127.0.0.1:5000'
-
-        elif(i == "-s"):  # This sets up test data
-            print('setting sleep variable off')
-            d.config['SLEEP'] = False
-
-        elif(i == "-v"):  # makes server local
-            print('verbose')
-            d.verbose = True
-
+    # for i in sys.argv[1:]:
+    #     if(i == "-l"):  # makes server local
+    #         print('using local server')
+    #         d.config['URL'] = 'http://127.0.0.1:5000'
+    #
+    #     elif(i == "-s"):  # This sets up test data
+    #         print('setting sleep variable off')
+    #         d.config['SLEEP'] = False
+    #
+    #     elif(i == "-v"):  # makes server local
+    #         print('verbose')
+    #         d.verbose = True
     d.main()
