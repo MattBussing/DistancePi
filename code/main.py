@@ -42,9 +42,9 @@ class Device(object):
             from sense_hat import SenseHat
             self.senseHat = SenseHat()
 
+        self.updateTimes()
         self.startProcesses()
         self.senseHatOptions()
-        self.updateTimes()
 
     def display(self):
         for i in self.messageList:
