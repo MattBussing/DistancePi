@@ -155,7 +155,7 @@ class Device(object):
             hour=self.eveningTime, minute=0, second=0, microsecond=0)
 
         # this makes it so that we see everthing from two nights ago on
-        self.nightBefore = self.evening - datetime.timedelta(days=2)
+        self.nightBefore = self.evening - timedelta(days=2)
 
         self.timeToSleep = not(
             self.now < self.evening and self.now > self.morning)
