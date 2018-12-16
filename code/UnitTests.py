@@ -10,11 +10,13 @@ import requests
 from main import Device
 from my_threads import MyThread
 
+# TODO delete all the messages added
+
 
 class TestAdd(unittest.TestCase):
     url = 'https://distance-pi.herokuapp.com'
     postUrl = url + '/'
-    test = 'Matt'
+    test = 'test'
     delUrl = url + '/' + test
 
     delJson = {'message': 'value'}

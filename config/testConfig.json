@@ -1,0 +1,9 @@
+{
+  "SLEEP": true,
+  "CLIENT":"/test",
+  "ERROR": false,
+  "URL":"https://distance-pi.herokuapp.com",
+  "EXPIRATION": 18000,
+  "MORNING": 7,
+  "EVENING": 22
+}
