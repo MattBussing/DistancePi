@@ -9,3 +9,5 @@ sudo apt-get autoclean
 sudo pip3 install -U pip
 sudo pip3 install -U pytz
 sudo pip3 install -U requests
+
+sudo reboot
