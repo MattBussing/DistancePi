@@ -6,28 +6,29 @@ import sys
 from datetime import datetime, timedelta
 from time import sleep
 
-import pytz
 import requests
 
-from my_threads import MyThread, Repeat
+import pytz
+from my_threads import Repeat
 
 
 class Device(object):
-    def __init__(self, name="main.py", verbose=False, testSleep=False, onComputer=False, tests=False, sleepOn=False):
+    def __init__(self, name="main.py", verbose=False, test_sleep=False,
+                 on_computer=False, tests=False, sleep_on=False):
         self.verbose = verbose
-        self.testSleep = testSleep
-        self.onComputer = onComputer
-        self.sleepOn = sleepOn
+        self.test_sleep = test_sleep
+        self.on_computer = on_computer
+        self.sleep_on = sleep_on
         self.tests = tests
         self.messageList = ["Messages not updated yet"]
         if tests:
             print("tests active")
 
-        configLocation = re.sub(
+        config_loc = re.sub(
             "code/" + name, "config/config.json", sys.argv[0])
         # loads config file (config)
         try:
-            with open(configLocation, 'r') as f:
+            with open(config_loc, 'r') as f:
                 config = json.load(f)
         except IOError:
             print("error missing config file")
@@ -38,37 +39,37 @@ class Device(object):
         self.url = config['URL']
         self.client = config['CLIENT']
 
-        if not self.onComputer:
+        if not self.on_computer:
             from sense_hat import SenseHat
             self.senseHat = SenseHat()
 
-        self.updateTimes()
-        self.startProcesses()
-        self.senseHatOptions()
+        self.update_times()
+        self.start_processes()
+        self.sense_options()
 
     def display(self):
         for i in self.messageList:
-            self.displayHelper(i)
+            self.display_helper(i)
 
-    def displayHelper(self, phrase):
-        if self.onComputer:
+    def display_helper(self, phrase):
+        if self.on_computer:
             print(phrase)
         else:
             self.senseHat.show_message(phrase)
 
-    def stopProcesses(self):
+    def stop_processes(self):
         # TODO: fix threads to make it so that you can pause and continue
         self.processes['print'].stop()
         self.processes['get'].stop()
         if self.verbose:
             print("processes killed")
-        if not self.onComputer:
+        if not self.on_computer:
             self.senseHat.clear()
         self.isStopped = True
 
-    def startProcesses(self):
+    def start_processes(self):
         self.processes = {
-            'get': Repeat(30, self.getMessages),
+            'get': Repeat(30, self.get_messages),
             'print': Repeat(3, self.display)
         }
         if self.verbose:
@@ -78,12 +79,12 @@ class Device(object):
         self.isStopped = False
 
     def shutdown(self):
-        self.stopProcesses()
-        self.displayHelper("shutting down")
+        self.stop_processes()
+        self.display_helper("shutting down")
         os.system('sudo shutdown now')
 
-    def senseHatOptions(self):
-        if not self.onComputer:
+    def sense_options(self):
+        if not self.on_computer:
             def pushed_up(event):
                 if event.action != 'released':
                     self.shutdown()
@@ -108,7 +109,7 @@ class Device(object):
             self.senseHat.stick.direction_left = pushed_left
             self.senseHat.stick.direction_right = pushed_right
 
-    def getMessages(self):
+    def get_messages(self):
         if self.verbose:
             print("getting messages")
         r = requests.get(url=self.url + self.client)
@@ -116,17 +117,19 @@ class Device(object):
         if(r.status_code == 200):
             # emptys the list
             self.messageList = []
-            mList = r.json()['messages']
-            if not(mList[0] == 'none'):  # checks to see if anything passed
-                for i in mList:
-                    # returns the json string of date / time as a datetime object with timezone
+            message_list = r.json()['messages']
+            # checks to see if anything passed
+            if not(message_list[0] == 'none'):
+                for i in message_list:
+                    # returns the json string of date / time as a datetime
+                    # object with timezone
                     # 2018-08-13T13:35:58.078103
-                    postDate = datetime.strptime(
+                    post_date = datetime.strptime(
                         i['dateTime'], "%Y-%m-%dT%H:%M:%S.%f")
-                    postDate = pytz.utc.localize(postDate, is_dst=None)
+                    post_date = pytz.utc.localize(post_date, is_dst=None)
 
-                    if postDate < self.nightBefore:
-                        self.DeleteMessages(i['message'])
+                    if post_date < self.nightBefore:
+                        self.delete_messages(i['message'])
                         continue
 
                     # if it's not deleted, the message is added to the list
@@ -135,7 +138,7 @@ class Device(object):
         else:
             self.messageList = ["Server not working properly"]
 
-    def DeleteMessages(self, message):
+    def delete_messages(self, message):
         if self.verbose:
             print("Deleting old message")
         r = requests.delete(url=self.url + self.client,
@@ -147,7 +150,7 @@ class Device(object):
         else:
             self.messageList = ["Server not working properly"]
 
-    def updateTimes(self):
+    def update_times(self):
         self.now = datetime.now(tz=pytz.timezone("America/Denver"))
         self.morning = self.now.replace(
             hour=self.morningTime, minute=0, second=0, microsecond=0)
@@ -165,10 +168,11 @@ class Device(object):
         try:
             i = 0
             while True:
-                self.updateTimes()
-                # This checks to see if we want to display messages right now (rn)
-                if self.timeToSleep and self.sleepOn or self.testSleep:
-                    self.stopProcesses()
+                self.update_times()
+                # This checks to see if we want to display messages right now
+                # (rn)
+                if self.timeToSleep and self.sleep_on or self.test_sleep:
+                    self.stop_processes()
 
                     diff = abs(self.morning - self.now)
                     if self.verbose:
@@ -183,24 +187,24 @@ class Device(object):
                         print("sleeping for", diff.total_seconds(), diff)
 
                 if self.isStopped:
-                    self.startProcesses()
+                    self.start_processes()
 
                 if self.tests:
                     sleep(1)
                     print("next", i)
                     if i > 3:
-                        self.stopProcesses()
+                        self.stop_processes()
                         return self.messageList
                     i += 1
                 else:
                     sleep(30)  # pauses for 30 seconds before restarting loop
         except KeyboardInterrupt:
             print('KeyboardInterrupt received. Exiting.')
-            self.stopProcesses()
+            self.stop_processes()
             exit()
 
 
 if __name__ == '__main__':
-    d = Device(sleepOn=True)
-    # d = Device(sleepOn=True, onComputer=True)
+    d = Device(sleep_on=True)
+    # d = Device(sleep_on=True, on_computer=True)
     d.main()
