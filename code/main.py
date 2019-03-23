@@ -20,7 +20,7 @@ class Device(object):
         self.on_computer = on_computer
         self.sleep_on = sleep_on
         self.tests = tests
-        self.messageList = ["Messages not updated yet"]
+        self.message_list = ["Messages not updated yet"]
         if tests:
             print("tests active")
 
@@ -48,7 +48,7 @@ class Device(object):
         self.sense_options()
 
     def display(self):
-        for i in self.messageList:
+        for i in self.message_list:
             self.display_helper(i)
 
     def display_helper(self, phrase):
@@ -116,7 +116,7 @@ class Device(object):
 
         if(r.status_code == 200):
             # emptys the list
-            self.messageList = []
+            self.message_list = []
             message_list = r.json()['messages']
             # checks to see if anything passed
             if not(message_list[0] == 'none'):
@@ -133,10 +133,10 @@ class Device(object):
                         continue
 
                     # if it's not deleted, the message is added to the list
-                    self.messageList.append(i['message'])
+                    self.message_list.append(i['message'])
 
         else:
-            self.messageList = ["Server not working properly"]
+            self.message_list = ["Server not working properly"]
 
     def delete_messages(self, message):
         if self.verbose:
@@ -148,7 +148,7 @@ class Device(object):
             if self.verbose:
                 print(r.json()['message'])
         else:
-            self.messageList = ["Server not working properly"]
+            self.message_list = ["Server not working properly"]
 
     def update_times(self):
         self.now = datetime.now(tz=pytz.timezone("America/Denver"))
@@ -160,8 +160,29 @@ class Device(object):
         # this makes it so that we see everthing from two nights ago on
         self.nightBefore = self.evening - timedelta(days=2)
 
-        self.timeToSleep = not(
+        self.time_to_sleep = not(
             self.now < self.evening and self.now > self.morning)
+
+    def _sleep(self):
+        """ These are all the things we do when sleeping"""
+        self.stop_processes()
+
+        # find the time to wake up
+        time_to_sleep = self._get_time_to_sleep()
+        if self.verbose:
+            print("going to sleep", time_to_sleep.total_seconds(),
+                  time_to_sleep)
+
+        # this is so you can test without waiting forever
+        if not self.tests:
+            sleep(time_to_sleep.total_seconds())  # sleeps until morning
+        else:
+            print("testing sleep")
+            sleep(0.01)
+            print("sleeping for", time_to_sleep.total_seconds(), time_to_sleep)
+
+    def _get_time_to_sleep(self):
+        return abs(self.morning - self.now)
 
     def main(self):
         # Loops until time for bed then it goes to sleep till morning
@@ -169,35 +190,27 @@ class Device(object):
             i = 0
             while True:
                 self.update_times()
-                # This checks to see if we want to display messages right now
-                # (rn)
-                if self.timeToSleep and self.sleep_on or self.test_sleep:
-                    self.stop_processes()
 
-                    diff = abs(self.morning - self.now)
-                    if self.verbose:
-                        print("going to sleep", diff.total_seconds(), diff)
-
-                    # this is so you can test without waiting forever
-                    if not self.tests:
-                        sleep(diff.total_seconds())  # sleeps until morning
-                    else:
-                        print("testing sleep")
-                        sleep(0.01)
-                        print("sleeping for", diff.total_seconds(), diff)
-
+                # if it is not during the time that someone wants a message
+                # displayed, we put it to sleep
+                if self.time_to_sleep and self.sleep_on or self.test_sleep:
+                    self._sleep()
+                # if we come out of sleep it is time to start the processes
                 if self.isStopped:
                     self.start_processes()
 
+                # this is for testing
                 if self.tests:
                     sleep(1)
                     print("next", i)
                     if i > 3:
                         self.stop_processes()
-                        return self.messageList
+                        return self.message_list
                     i += 1
-                else:
-                    sleep(30)  # pauses for 30 seconds before restarting loop
+
+                else:  # pauses for 30 seconds before restarting loop
+                    sleep(30)
+
         except KeyboardInterrupt:
             print('KeyboardInterrupt received. Exiting.')
             self.stop_processes()
