@@ -20,6 +20,8 @@ class Device(object):
         self.sleep_on = sleep_on
         self.tests = tests
         self.message_list = ["Messages not updated yet"]
+        self.processes_stopped = False
+
         if tests:
             print("tests active")
 
@@ -28,10 +30,7 @@ class Device(object):
             from sense_hat import SenseHat
             self.sense_hat = SenseHat()
             self.sense_hat.low_light = True
-
-        self.update_times()
-        self.start_processes()
-        self.sense_options()
+            self.sense_options()
 
     def load_config(self):
         config_loc = get_args(sys.argv)
@@ -46,6 +45,65 @@ class Device(object):
         self.eveningTime = config['EVENING']
         self.url = config['URL']
         self.client = config['CLIENT']
+
+    def main(self):
+        if self.processes_stopped:
+            self.update_times()
+            self.start_processes()
+        # Loops until time for bed then it goes to sleep till morning
+        try:
+            i = 0
+            while True:
+                self.update_times()
+
+                # if it is not during the time that someone wants a message
+                # displayed, we put it to sleep
+                if self.time_to_sleep and self.sleep_on or self.test_sleep:
+                    self._sleep()
+                # if we come out of sleep it is time to start the processes
+                if self.processes_stopped:
+                    self.start_processes()
+
+                # this is for testing
+                if self.tests:
+                    sleep(1)
+                    print("next", i)
+                    if i > 3:
+                        self.stop_processes()
+                        return self.message_list
+                    i += 1
+
+                else:  # pauses for 30 seconds before restarting loop
+                    sleep(30)
+
+        except KeyboardInterrupt:
+            print('KeyboardInterrupt received. Exiting.')
+            self.stop_processes()
+            exit()
+
+    def make_heart(self):
+        # green = (0, 255, 0)
+        # yellow = (255, 255, 0)
+        # blue = (0, 0, 255)
+        # red = (255, 0, 0)
+        # white = (255, 255, 255)
+        nothing = (0, 0, 0)
+        pink = (255, 105, 180)
+        o = nothing
+        p = pink
+        heart = [
+            o, o, o, o, o, o, o, o,
+            o, p, p, o, p, p, o, o,
+            p, p, p, p, p, p, p, o,
+            p, p, p, p, p, p, p, o,
+            o, p, p, p, p, p, o, o,
+            o, o, p, p, p, o, o, o,
+            o, o, o, p, o, o, o, o,
+            o, o, o, o, o, o, o, o,
+        ]
+
+        self.sense_hat.set_pixels(heart)
+        sleep(10)
 
     def display(self):
         for i in self.message_list:
@@ -65,7 +123,7 @@ class Device(object):
             print("processes killed")
         if not self.on_computer:
             self.sense_hat.clear()
-        self.isStopped = True
+        self.processes_stopped = True
 
     def start_processes(self):
         self.processes = {
@@ -76,7 +134,7 @@ class Device(object):
             print("starting processes")
         self.processes['print'].start()
         self.processes['get'].start()
-        self.isStopped = False
+        self.processes_stopped = False
 
     def shutdown(self):
         self.stop_processes()
@@ -188,61 +246,6 @@ class Device(object):
 
     def _get_time_to_sleep(self):
         return abs(self.morning - self.now)
-
-    def main(self):
-        # Loops until time for bed then it goes to sleep till morning
-        try:
-            i = 0
-            while True:
-                self.update_times()
-
-                # if it is not during the time that someone wants a message
-                # displayed, we put it to sleep
-                if self.time_to_sleep and self.sleep_on or self.test_sleep:
-                    self._sleep()
-                # if we come out of sleep it is time to start the processes
-                if self.isStopped:
-                    self.start_processes()
-
-                # this is for testing
-                if self.tests:
-                    sleep(1)
-                    print("next", i)
-                    if i > 3:
-                        self.stop_processes()
-                        return self.message_list
-                    i += 1
-
-                else:  # pauses for 30 seconds before restarting loop
-                    sleep(30)
-
-        except KeyboardInterrupt:
-            print('KeyboardInterrupt received. Exiting.')
-            self.stop_processes()
-            exit()
-
-    def make_heart(self):
-        # green = (0, 255, 0)
-        # yellow = (255, 255, 0)
-        # blue = (0, 0, 255)
-        # red = (255, 0, 0)
-        # white = (255, 255, 255)
-        nothing = (0, 0, 0)
-        pink = (255, 105, 180)
-        o = nothing
-        p = pink
-        heart = [
-            o, o, o, o, o, o, o, o,
-            o, p, p, o, p, p, o, o,
-            p, p, p, p, p, p, p, o,
-            p, p, p, p, p, p, p, o,
-            o, p, p, p, p, p, o, o,
-            o, o, p, p, p, o, o, o,
-            o, o, o, p, o, o, o, o,
-            o, o, o, o, o, o, o, o,
-        ]
-
-        self.sense_hat.set_pixels(heart)
 
 
 def get_args(list):
