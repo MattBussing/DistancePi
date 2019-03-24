@@ -1,7 +1,7 @@
 # Author Matt Bussing
 # run using py.test tests.py
 
-import pytest
+# import pytest
 
 from distancepi.__main__ import get_args
 
@@ -13,18 +13,18 @@ def test_get_args():
     assert get_args(list) == "file"
 
 
-def test_no_config():
-    # nothing after config
-    list = ["asdf", "asf", "--config"]
-    with pytest.raises(IOError("no config file specified")):
-        get_args(list)
-
-
-def test_config_not_followed():
-    # nothing after config
-    list = ["asdf", "asf", "--config", "--asfd", "adfs"]
-    with pytest.raises(IOError("config file cannot start with flag (--)")):
-        get_args(list)
+# def test_no_config():
+#     # nothing after config
+#     list = ["asdf", "asf", "--config"]
+#     with pytest.raises(IOError("no config file specified")):
+#         get_args(list)
+#
+#
+# def test_config_not_followed():
+#     # nothing after config
+#     list = ["asdf", "asf", "--config", "--asfd", "adfs"]
+#     with pytest.raises(IOError("config file cannot start with flag (--)")):
+#         get_args(list)
 
 # def test_config_location():
 #     # d = Device()

@@ -227,10 +227,9 @@ class Device(object):
             self.stop_processes()
             exit()
 
-# call with sys.argv
-
 
 def get_args(list):
+    # this handles how we deal with the args passed into the system
     length = len(list)
     config_loc = None
     for i in range(1, length):
@@ -238,7 +237,7 @@ def get_args(list):
             # print(list[i + 1][0:2])
             if length <= i + 1:
                 raise IOError("no config file specified")
-            elif not list[i + 1][0:2] == "--":
+            elif list[i + 1][0:2] == "--":
                 raise IOError("config file cannot start with flag (--)")
             else:
                 config_loc = list[i + 1]

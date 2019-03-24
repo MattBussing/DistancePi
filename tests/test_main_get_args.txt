@@ -1,8 +1,15 @@
->>> from distancepi import *
+>>> from distancepi.__main__ import *
 
 
 >>> list = ["asdf", "asf", "--config"]
 >>> get_args(list)
+Traceback (most recent call last):
+    ...
+OSError: no config file specified
 
 
-list = ["asdf", "asf", "--config", "--asfd", "adfs"]
+>>> list = ["asdf", "asf", "--config", "--asfd", "adfs"]
+>>> get_args(list)
+Traceback (most recent call last):
+    ...
+OSError: config file cannot start with flag (--)
