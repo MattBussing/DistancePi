@@ -6,9 +6,9 @@ import sys
 from datetime import datetime, timedelta
 from time import sleep
 
+import pytz
 import requests
 
-import pytz
 from my_threads import Repeat
 
 
@@ -24,21 +24,7 @@ class Device(object):
         if tests:
             print("tests active")
 
-        config_loc = re.sub(
-            "code/" + name, "config/config.json", sys.argv[0])
-        # loads config file (config)
-        try:
-            with open(config_loc, 'r') as f:
-                config = json.load(f)
-        except IOError:
-            print("error missing config file")
-            exit(-1)
-
-        self.morningTime = config['MORNING']
-        self.eveningTime = config['EVENING']
-        self.url = config['URL']
-        self.client = config['CLIENT']
-
+        self._load_config(name)
         if not self.on_computer:
             from sense_hat import SenseHat
             self.senseHat = SenseHat()
@@ -46,6 +32,24 @@ class Device(object):
         self.update_times()
         self.start_processes()
         self.sense_options()
+
+    @classmethod
+    def get_config_location(cls, name):
+        return re.sub("code/" + name, "config/config.json", sys.argv[0])
+
+    def load_config(self, name):
+        config_loc = self._get_config_location(name)
+        # loads config file (config)s
+        try:
+            with open(config_loc, 'r') as f:
+                config = json.load(f)
+        except IOError:
+            print("error missing config file")
+            exit(-1)
+        self.morningTime = config['MORNING']
+        self.eveningTime = config['EVENING']
+        self.url = config['URL']
+        self.client = config['CLIENT']
 
     def display(self):
         for i in self.message_list:
@@ -151,14 +155,19 @@ class Device(object):
             self.message_list = ["Server not working properly"]
 
     def update_times(self):
-        self.now = datetime.now(tz=pytz.timezone("America/Denver"))
-        self.morning = self.now.replace(
-            hour=self.morningTime, minute=0, second=0, microsecond=0)
-        self.evening = self.now.replace(
-            hour=self.eveningTime, minute=0, second=0, microsecond=0)
+        temp = datetime.now(tz=pytz.timezone("America/Denver"))
 
-        # this makes it so that we see everthing from two nights ago on
-        self.nightBefore = self.evening - timedelta(days=2)
+        self.now = temp
+        # TODO: ADD THING TO MAKE THE TIME NOT UPDATE EVERYTIME
+        new_day = True
+        if new_day:
+            self.morning = self.now.replace(
+                hour=self.morningTime, minute=0, second=0, microsecond=0)
+            self.evening = self.now.replace(
+                hour=self.eveningTime, minute=0, second=0, microsecond=0)
+
+            # this makes it so that we see everthing from two nights ago on
+            self.nightBefore = self.evening - timedelta(days=2)
 
         self.time_to_sleep = not(
             self.now < self.evening and self.now > self.morning)
