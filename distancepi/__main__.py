@@ -9,7 +9,7 @@ from time import sleep
 import pytz
 import requests
 
-from my_threads import Repeat
+from distancepi.my_threads import Repeat
 
 
 class Device(object):
@@ -35,6 +35,8 @@ class Device(object):
 
     @classmethod
     def get_config_location(cls, name):
+        for i in range(1, len(sys.argv)):
+            print()
         return re.sub("code/" + name, "config/config.json", sys.argv[0])
 
     def load_config(self, name):
@@ -224,6 +226,23 @@ class Device(object):
             print('KeyboardInterrupt received. Exiting.')
             self.stop_processes()
             exit()
+
+# call with sys.argv
+
+
+def get_args(list):
+    length = len(list)
+    config_loc = None
+    for i in range(1, length):
+        if list[i] == "--config":
+            # print(list[i + 1][0:2])
+            if length <= i + 1:
+                raise IOError("no config file specified")
+            elif not list[i + 1][0:2] == "--":
+                raise IOError("config file cannot start with flag (--)")
+            else:
+                config_loc = list[i + 1]
+    return config_loc
 
 
 if __name__ == '__main__':

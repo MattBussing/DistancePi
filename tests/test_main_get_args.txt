@@ -1,0 +1,8 @@
+>>> from distancepi import *
+
+
+>>> list = ["asdf", "asf", "--config"]
+>>> get_args(list)
+
+
+list = ["asdf", "asf", "--config", "--asfd", "adfs"]
