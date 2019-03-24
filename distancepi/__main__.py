@@ -230,6 +230,7 @@ class Device(object):
 
     def _sleep(self):
         """ These are all the things we do when sleeping"""
+        self.sense_hat.clear()
         self.stop_processes()
 
         # find the time to wake up
