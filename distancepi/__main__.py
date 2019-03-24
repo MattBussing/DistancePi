@@ -20,7 +20,7 @@ class Device(object):
         self.sleep_on = sleep_on
         self.tests = tests
         self.message_list = ["Messages not updated yet"]
-        self.processes_stopped = False
+        self.processes_stopped = True
 
         if tests:
             print("tests active")
