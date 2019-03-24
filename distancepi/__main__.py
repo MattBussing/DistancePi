@@ -12,7 +12,7 @@ from distancepi.my_threads import Repeat
 
 
 class Device(object):
-    def __init__(self, name="main.py", verbose=False, test_sleep=False,
+    def __init__(self, verbose=False, test_sleep=False,
                  on_computer=False, tests=False, sleep_on=False):
         self.verbose = verbose
         self.test_sleep = test_sleep
@@ -23,7 +23,7 @@ class Device(object):
         if tests:
             print("tests active")
 
-        self.load_config(name)
+        self.load_config()
         if not self.on_computer:
             from sense_hat import SenseHat
             self.sense_hat = SenseHat()
@@ -33,8 +33,10 @@ class Device(object):
         self.start_processes()
         self.sense_options()
 
-    def load_config(self, name):
+    def load_config(self):
+        print(sys.argv)
         config_loc = get_args(sys.argv)
+        print(sys.argv)
         # loads config file (config)s
         try:
             with open(config_loc, 'r') as f:
