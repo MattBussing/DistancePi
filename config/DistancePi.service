@@ -4,7 +4,7 @@
 
 [Service]
   Type=idle
-  ExecStart=/usr/bin/python3.5 /home/pi/DistancePi/code/main.py
+  ExecStart=distancepi --config config/testConfig.json
   RemainAfterExit=yes
 
 [Install]
