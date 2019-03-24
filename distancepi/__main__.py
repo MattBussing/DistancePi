@@ -261,8 +261,12 @@ def get_args(list):
     return config_loc
 
 
-if __name__ == '__main__':
+def main():
     d = Device(sleep_on=True)
     # d = Device(sleep_on=True, on_computer=True)
     # d.main()
     d.make_heart()
+
+
+if __name__ == '__main__':
+    main()
