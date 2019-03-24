@@ -1,7 +1,6 @@
 # author Matt Bussing
 import json
 import os
-import re
 import sys
 from datetime import datetime, timedelta
 from time import sleep
@@ -27,7 +26,8 @@ class Device(object):
         self.load_config(name)
         if not self.on_computer:
             from sense_hat import SenseHat
-            self.senseHat = SenseHat()
+            self.sense_hat = SenseHat()
+            self.sense_hat.low_light = True
 
         self.update_times()
         self.start_processes()
@@ -55,7 +55,7 @@ class Device(object):
         if self.on_computer:
             print(phrase)
         else:
-            self.senseHat.show_message(phrase)
+            self.sense_hat.show_message(phrase)
 
     def stop_processes(self):
         # TODO: fix threads to make it so that you can pause and continue
@@ -64,7 +64,7 @@ class Device(object):
         if self.verbose:
             print("processes killed")
         if not self.on_computer:
-            self.senseHat.clear()
+            self.sense_hat.clear()
         self.isStopped = True
 
     def start_processes(self):
@@ -102,12 +102,12 @@ class Device(object):
                     print("pressed right")
 
             def refresh():
-                self.senseHat.clear()
+                self.sense_hat.clear()
 
-            self.senseHat.stick.direction_up = pushed_up
-            self.senseHat.stick.direction_down = pushed_down
-            self.senseHat.stick.direction_left = pushed_left
-            self.senseHat.stick.direction_right = pushed_right
+            self.sense_hat.stick.direction_up = pushed_up
+            self.sense_hat.stick.direction_down = pushed_down
+            self.sense_hat.stick.direction_left = pushed_left
+            self.sense_hat.stick.direction_right = pushed_right
 
     def get_messages(self):
         if self.verbose:
@@ -221,6 +221,29 @@ class Device(object):
             self.stop_processes()
             exit()
 
+    def make_heart(self):
+        # green = (0, 255, 0)
+        # yellow = (255, 255, 0)
+        # blue = (0, 0, 255)
+        # red = (255, 0, 0)
+        # white = (255, 255, 255)
+        nothing = (0, 0, 0)
+        pink = (255, 105, 180)
+        o = nothing
+        p = pink
+        heart = [
+            o, o, o, o, o, o, o, o,
+            o, p, p, o, p, p, o, o,
+            p, p, p, p, p, p, p, o,
+            p, p, p, p, p, p, p, o,
+            o, p, p, p, p, p, o, o,
+            o, o, p, p, p, o, o, o,
+            o, o, o, p, o, o, o, o,
+            o, o, o, o, o, o, o, o,
+        ]
+
+        self.sense_hat.set_pixels(heart)
+
 
 def get_args(list):
     # this handles how we deal with the args passed into the system
@@ -241,4 +264,5 @@ def get_args(list):
 if __name__ == '__main__':
     d = Device(sleep_on=True)
     # d = Device(sleep_on=True, on_computer=True)
-    d.main()
+    # d.main()
+    d.make_heart()
