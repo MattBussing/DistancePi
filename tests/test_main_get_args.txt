@@ -13,3 +13,9 @@ OSError: no config file specified
 Traceback (most recent call last):
     ...
 OSError: config file cannot start with flag (--)
+
+>>> list = ['/usr/local/bin/distancepi', 'config/testConfig.json']
+>>> get_args(list)
+Traceback (most recent call last):
+    ...
+OSError: Must use --config flag

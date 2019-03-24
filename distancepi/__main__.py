@@ -260,6 +260,8 @@ def get_args(list):
                 raise IOError("config file cannot start with flag (--)")
             else:
                 config_loc = list[i + 1]
+    if config_loc is None:
+        raise IOError("Must use --config flag")
     return config_loc
 
 
