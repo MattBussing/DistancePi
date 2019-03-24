@@ -4,7 +4,7 @@
 
 [Service]
   Type=idle
-  ExecStart=distancepi --config config/testConfig.json
+  ExecStart=/bin/bash -c distancepi --config config/testConfig.json
   RemainAfterExit=yes
 
 [Install]
