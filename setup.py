@@ -13,16 +13,16 @@ setup(
     url='https://github.com/MattBussing/DistancePi',
     author='Matt Bussing',
     author_email='mbussing@mines.edu',
-    license='Closed source; do not share with other students '
-            'in (or who will be in) this course.',
+    license='',
 
     classifiers=[
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.7'
     ],
 
     packages=['distancepi'],
-    python_requires='>=3.6, <4',
+    python_requires='>=3.5, <4',
     install_requires=[
         'pytest>=3.8'],
 
