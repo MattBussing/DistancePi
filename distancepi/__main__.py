@@ -24,7 +24,7 @@ class Device(object):
         if tests:
             print("tests active")
 
-        self._load_config(name)
+        self.load_config(name)
         if not self.on_computer:
             from sense_hat import SenseHat
             self.senseHat = SenseHat()
@@ -33,14 +33,8 @@ class Device(object):
         self.start_processes()
         self.sense_options()
 
-    @classmethod
-    def get_config_location(cls, name):
-        for i in range(1, len(sys.argv)):
-            print()
-        return re.sub("code/" + name, "config/config.json", sys.argv[0])
-
     def load_config(self, name):
-        config_loc = self._get_config_location(name)
+        config_loc = get_args(sys.argv)
         # loads config file (config)s
         try:
             with open(config_loc, 'r') as f:

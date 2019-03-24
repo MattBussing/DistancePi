@@ -13,18 +13,7 @@ def test_get_args():
     assert get_args(list) == "file"
 
 
-# def test_no_config():
-#     # nothing after config
-#     list = ["asdf", "asf", "--config"]
-#     with pytest.raises(IOError("no config file specified")):
-#         get_args(list)
-#
-#
-# def test_config_not_followed():
-#     # nothing after config
-#     list = ["asdf", "asf", "--config", "--asfd", "adfs"]
-#     with pytest.raises(IOError("config file cannot start with flag (--)")):
-#         get_args(list)
+# [matt@jackjack DistancePi]$ python3.7 - m distancepi - -config
 
 # def test_config_location():
 #     # d = Device()
