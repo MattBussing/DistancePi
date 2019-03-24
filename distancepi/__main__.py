@@ -81,7 +81,7 @@ class Device(object):
             self.stop_processes()
             exit()
 
-    def make_heart(self):
+    def display_heart(self):
         # green = (0, 255, 0)
         # yellow = (255, 255, 0)
         # blue = (0, 0, 255)
@@ -108,6 +108,8 @@ class Device(object):
     def display(self):
         for i in self.message_list:
             self.display_helper(i)
+        if not self.on_computer:
+            self.display_heart()
 
     def display_helper(self, phrase):
         if self.on_computer:
@@ -267,9 +269,11 @@ def get_args(list):
 
 def main():
     d = Device(sleep_on=True)
+    d.main()
+
+    # debug stuff
     # d = Device(sleep_on=True, on_computer=True)
-    # d.main()
-    d.make_heart()
+    # d.display_heart()
 
 
 if __name__ == '__main__':
