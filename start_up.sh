@@ -1,3 +1,3 @@
-cd /home/pi/DistancePi/
+cd $HOME/DistancePi/
 git pull
-distancepi --config /home/pi/DistancePi/config/config.json &
+distancepi --config $HOME/DistancePi/config/config.json &

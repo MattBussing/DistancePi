@@ -4,7 +4,7 @@
 
 [Service]
   Type=idle
-  ExecStart=/bin/bash -c /home/pi/DistancePi/start_up.sh
+  ExecStart=/bin/bash -c $HOME/DistancePi/start_up.sh
   RemainAfterExit=yes
 
 [Install]
