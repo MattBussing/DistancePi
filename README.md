@@ -7,5 +7,5 @@ Install via `$(sudo) python3 -m pip install -e . --user`
 - Normal: `python3 -m distancepi --config config/config.json`
 - Fun counter: `python3 distancepi/device.py`
 
-#Notes
+# Notes
  - This project assumes you are using a headless raspberry pi with sensehat. If you want to see the messages then run with onComputer=True
