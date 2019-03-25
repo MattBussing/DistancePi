@@ -156,9 +156,8 @@ class Device():
                 o, o, o, o, o, o, o, g,
         """
         counter_color = Device.colors[int(
-            self.model.thought_of / len(self.colors)) % len(self.colors)]
-        for i in range(0, self.model.thought_of %
-                       len(self.colors)):
+            self.model.thought_of / 9) % len(self.colors)]
+        for i in range(0, self.model.thought_of % 9):
             heart[8 * (7 - i) + 7] = counter_color
         return heart
 
