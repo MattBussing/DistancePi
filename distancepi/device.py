@@ -6,6 +6,7 @@ from time import sleep
 import pytz
 
 from distancepi.custom_threads import RepeatedFunction
+from distancepi.model import Model
 
 
 class Device():
@@ -25,13 +26,13 @@ class Device():
 
     def __init__(self, verbose=False, test_sleep=False,
                  on_computer=False, tests=False, sleep_on=False):
+        self.model = Model()
         self.verbose = verbose
         self.test_sleep = test_sleep
         self.on_computer = on_computer
         self.sleep_on = sleep_on
         self.tests = tests
         self.processes_stopped = True
-        self.item = 0
         if tests:
             print("tests active")
 
@@ -77,9 +78,10 @@ class Device():
             self.stop_processes()
             exit()
 
-    def display_heart(self, i: int):
-        o = Device.nothing
-        p = Device.colors[self.item]
+    def display_heart(self):
+        o = Device.nothing  # background
+        p = Device.red  # heart color
+        # 8 x 8 pixel array
         heart = [
             o, o, o, o, o, o, o, o,
             o, p, p, o, p, p, o, o,
@@ -88,11 +90,77 @@ class Device():
             o, p, p, p, p, p, o, o,
             o, o, p, p, p, o, o, o,
             o, o, o, p, o, o, o, o,
-            o, o, o, o, o, o, o, o,
+            o, o, o, o, o, o, o, o
         ]
-
+        self.add_thought_of(heart)
         self.sense_hat.set_pixels(heart)
-        # sleep(10)
+
+    def add_thought_of(self, heart: list):
+        """
+        we want to start in the bottom right and work are way up
+                    # r * c
+                    # r*width + c
+        It looks like this:
+        thought_of = 0
+        o, o, o, o, o, o, o, o,
+        o, p, p, o, p, p, o, o,
+        p, p, p, p, p, p, p, o,
+        p, p, p, p, p, p, p, o,
+        o, p, p, p, p, p, o, o,
+        o, o, p, p, p, o, o, o,
+        o, o, o, p, o, o, o, o,
+        o, o, o, o, o, o, o, o,
+        thought_of = 1
+        o, o, o, o, o, o, o, o,
+        o, p, p, o, p, p, o, o,
+        p, p, p, p, p, p, p, o,
+        p, p, p, p, p, p, p, o,
+        o, p, p, p, p, p, o, o,
+        o, o, p, p, p, o, o, o,
+        o, o, o, p, o, o, o, o,
+        o, o, o, o, o, o, o, g,
+        thought_of = 2
+        o, o, o, o, o, o, o, o,
+        o, p, p, o, p, p, o, o,
+        p, p, p, p, p, p, p, o,
+        p, p, p, p, p, p, p, o,
+        o, p, p, p, p, p, o, o,
+        o, o, p, p, p, o, o, o,
+        o, o, o, p, o, o, o, g,
+        o, o, o, o, o, o, o, g,
+        and so on
+        thus 7*7+7 = 1 (0)
+             6*7 +7 = 2 (0,1)
+
+         maybe TODO
+            then once we are more than eight add 1 to the
+             far bottom left and so on
+
+                thought_of = 8
+                o, o, o, o, o, o, o, o,
+                o, p, p, o, p, p, o, o,
+                p, p, p, p, p, p, p, o,
+                p, p, p, p, p, p, p, o,
+                o, p, p, p, p, p, o, o,
+                o, o, p, p, p, o, o, o,
+                o, o, o, p, o, o, o, o,
+                o, o, o, o, o, o, o, g,
+                thought_of =
+                o, o, o, o, o, o, o, o,
+                o, p, p, o, p, p, o, o,
+                p, p, p, p, p, p, p, o,
+                p, p, p, p, p, p, p, o,
+                o, p, p, p, p, p, o, o,
+                o, o, p, p, p, o, o, o,
+                o, o, o, p, o, o, o, g,
+                o, o, o, o, o, o, o, g,
+        """
+        counter_color = Device.colors[int(
+            self.model.thought_of / len(self.colors)) % len(self.colors)]
+        for i in range(0, self.model.thought_of %
+                       len(self.colors)):
+            heart[8 * (7 - i) + 7] = counter_color
+        return heart
 
     def display(self):
         for i in self.message_list:
