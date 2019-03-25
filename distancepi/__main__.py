@@ -2,6 +2,8 @@
 import json
 import sys
 
+from distancepi.device import Device
+
 
 def get_args(list):
     # this handles how we deal with the args passed into the system
@@ -36,9 +38,9 @@ def load_config(self):
 
 
 def main():
-    pass
-    # d = Device(sleep_on=True)
-    # d.main()
+    # pass
+    d = Device(sleep_on=True)
+    d.main()
 
     # debug stuff
     # d = Device(sleep_on=True, on_computer=True)

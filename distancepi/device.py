@@ -298,5 +298,6 @@ class Device():
 if __name__ == "__main__":
     d = Device()
     while True:
-        d.display_heart(3)
-        # sleep(2)
+        d.display_heart()
+        d.model.thought_of += 1
+        sleep(2)
