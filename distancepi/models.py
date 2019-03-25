@@ -14,9 +14,9 @@ class Data():
      For now we will not put any safety mechanisms on the class
     """
 
-    def __init__(self):
-        self.message_list = ["Messages not updated yet"]
-        self.thought_of = 0
+    def __init__(self, m_list=["Messages not updated yet"], thought_of=0):
+        self.message_list = m_list
+        self.thought_of = thought_of
 
 
 class User():

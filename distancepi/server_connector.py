@@ -4,6 +4,8 @@ from datetime import datetime
 import pytz
 import requests
 
+from distancepi.models import Data
+
 
 class ServerConnector():
     """
@@ -14,35 +16,42 @@ class ServerConnector():
         self.url = url
         self.client = client
 
-    def get_messages(self, time_before=None):
+    def get_data(self, time_before=None):
         r = requests.get(url=self.url + self.client)
         message_list = list()
 
         if(r.status_code == 200):
-            # emptys the list
-            unparsed_message_list = r.json()['messages']
-            # checks to see if anything passed
-            if not(unparsed_message_list[0] == 'none'):
-                # here it deletes old messages and adds the new
-                for i in unparsed_message_list:
-                    # returns the json string of date / time as a datetime
-                    # object with timezone
-                    # 2018-08-13T13:35:58.078103
-                    post_date = datetime.strptime(
-                        i['dateTime'], "%Y-%m-%dT%H:%M:%S.%f")
-                    post_date = pytz.utc.localize(post_date, is_dst=None)
-
-                    #  if time befoe is None we just add it to the list
-                    if time_before is not None and post_date < time_before:
-                        self._delete_messages(i['message'])
-                        continue
-
-                    # if it's not deleted, the message is added to the list
-                    message_list.append(i['message'])
-
+            data = Data(
+                self._get_messages(time_before=None)
+                self._get_thought_of())
         else:
             message_list = ["Server not working properly"]
         return message_list
+
+    def _get_messages(self, time_before=None):
+            # emptys the list
+        unparsed_message_list = r.json()['messages']
+        # checks to see if anything passed
+        if not(unparsed_message_list[0] == 'none'):
+            # here it deletes old messages and adds the new
+            for i in unparsed_message_list:
+                # returns the json string of date / time as a datetime
+                # object with timezone
+                # 2018-08-13T13:35:58.078103
+                post_date = datetime.strptime(
+                    i['dateTime'], "%Y-%m-%dT%H:%M:%S.%f")
+                post_date = pytz.utc.localize(post_date, is_dst=None)
+
+                #  if time befoe is None we just add it to the list
+                if time_before is not None and post_date < time_before:
+                    self._delete_messages(i['message'])
+                    continue
+
+                # if it's not deleted, the message is added to the list
+                message_list.append(i['message'])
+
+    def _get_thought_of(self):
+        pass
 
     def _delete_messages(self, message):
         requests.delete(url=self.url + self.client, json={'message': message})
