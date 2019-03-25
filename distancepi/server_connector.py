@@ -6,25 +6,13 @@ import requests
 
 
 class ServerConnector():
-    def __init__(self, verbose=False, test_sleep=False,
-                 on_computer=False, tests=False, sleep_on=False):
-        self.verbose = verbose
-        self.test_sleep = test_sleep
-        self.on_computer = on_computer
-        self.sleep_on = sleep_on
-        self.tests = tests
-        self.message_list = ["Messages not updated yet"]
-        self.processes_stopped = True
+    """
+    This is the class we will use to connect the device to the server
+    """
 
-        if tests:
-            print("tests active")
-
-        self.load_config()
-        if not self.on_computer:
-            from sense_hat import SenseHat
-            self.sense_hat = SenseHat()
-            self.sense_hat.low_light = True
-            self.sense_options()
+    def __init__(self, url: str, client: str):
+        self.url = url
+        self.client = client
 
     def get_messages(self):
         r = requests.get(url=self.url + self.client)
@@ -44,7 +32,7 @@ class ServerConnector():
                     post_date = pytz.utc.localize(post_date, is_dst=None)
 
                     if post_date < self.nightBefore:
-                        self.delete_messages(i['message'])
+                        self._delete_messages(i['message'])
                         continue
 
                     # if it's not deleted, the message is added to the list
@@ -53,7 +41,7 @@ class ServerConnector():
         else:
             self.message_list = ["Server not working properly"]
 
-    def delete_messages(self, message):
+    def _delete_messages(self, message):
         if self.verbose:
             print("Deleting old message")
         r = requests.delete(url=self.url + self.client,
