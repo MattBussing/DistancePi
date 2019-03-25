@@ -8,7 +8,7 @@ from setuptools import setup
 setup(
     name='distancepi',
     version='1.0.0-devel',
-    description='Client for RaspberryPi to get and display messages',
+    description='Client for RaspberryPi to get and View messages',
     long_description='',
     url='https://github.com/MattBussing/DistancePi',
     author='Matt Bussing',

@@ -3,7 +3,7 @@ import json
 import sys
 
 from distancepi.device import Device
-from distancepi.model import User
+from distancepi.models import User
 
 
 def get_config_loc(list):
@@ -21,6 +21,7 @@ def get_config_loc(list):
                 config_loc = list[i + 1]
     if config_loc is None:
         raise IOError("Must use --config flag")
+
     return config_loc
 
 
@@ -29,13 +30,12 @@ def load_config():
     # loads config file (config)s
     try:
         with open(config_loc, 'r') as f:
-            config = json.load(f)
+            return json.load(f)
     except IOError:
         print("error missing config file")
         exit(-1)
-    return config
 
 
 if __name__ == '__main__':
-    d = Device(user=User(load_config))
+    d = Device(user=User(load_config()))
     d.main()

@@ -2,20 +2,20 @@
 
 
 >>> list = ["asdf", "asf", "--config"]
->>> get_args(list)
+>>> get_config_loc(list)
 Traceback (most recent call last):
     ...
 OSError: no config file specified
 
 
 >>> list = ["asdf", "asf", "--config", "--asfd", "adfs"]
->>> get_args(list)
+>>> get_config_loc(list)
 Traceback (most recent call last):
     ...
 OSError: config file cannot start with flag (--)
 
 >>> list = ['/usr/local/bin/distancepi', 'config/testConfig.json']
->>> get_args(list)
+>>> get_config_loc(list)
 Traceback (most recent call last):
     ...
 OSError: Must use --config flag
