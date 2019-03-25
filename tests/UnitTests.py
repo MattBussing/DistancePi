@@ -8,7 +8,7 @@ import unittest
 import requests
 
 from main import Device
-from my_threads import MyThread
+from custom_threads import MyThread
 
 # TODO delete all the messages added
 

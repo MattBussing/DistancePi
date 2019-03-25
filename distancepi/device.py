@@ -5,7 +5,7 @@ from time import sleep
 
 import pytz
 
-from distancepi.my_threads import Repeat
+from distancepi.custom_threads import RepeatedFunction
 
 
 class Device():
@@ -21,6 +21,7 @@ class Device():
     white = (255, 255, 255)
     nothing = (0, 0, 0)
     pink = (255, 105, 180)
+    colors = [green, yellow, blue, red, white, pink]
 
     def __init__(self, verbose=False, test_sleep=False,
                  on_computer=False, tests=False, sleep_on=False):
@@ -30,11 +31,11 @@ class Device():
         self.sleep_on = sleep_on
         self.tests = tests
         self.processes_stopped = True
-
+        self.item = 0
         if tests:
             print("tests active")
 
-        self.load_config()
+        # self.load_config()
         if not self.on_computer:
             from sense_hat import SenseHat
             self.sense_hat = SenseHat()
@@ -76,9 +77,9 @@ class Device():
             self.stop_processes()
             exit()
 
-    def display_heart(self):
+    def display_heart(self, i: int):
         o = Device.nothing
-        p = Device.pink
+        p = Device.colors[self.item]
         heart = [
             o, o, o, o, o, o, o, o,
             o, p, p, o, p, p, o, o,
@@ -91,7 +92,7 @@ class Device():
         ]
 
         self.sense_hat.set_pixels(heart)
-        sleep(10)
+        # sleep(10)
 
     def display(self):
         for i in self.message_list:
@@ -117,8 +118,8 @@ class Device():
 
     def start_processes(self):
         self.processes = {
-            'get': Repeat(30, self.get_messages),
-            'print': Repeat(3, self.display)
+            'get': RepeatedFunction(30, self.get_messages),
+            'print': RepeatedFunction(3, self.display)
         }
         if self.verbose:
             print("starting processes")
@@ -135,11 +136,18 @@ class Device():
         if not self.on_computer:
             def pushed_up(event):
                 if event.action != 'released':
-                    self.shutdown()
+                    # self.shutdown()
+                    self.item = (self.item + 1) % len(Device.colors)
+                    # self.display_heart(1)
 
             def pushed_down(event):
                 if event.action != 'released':
                     print("pressed down")
+                    if self.item > 0:
+                        self.item -= 1
+                    else:
+                        self.item = len(Device.colors) - 1
+                    self.display_heart(1)
 
             def pushed_left(event):
                 if event.action != 'released':
@@ -196,3 +204,10 @@ class Device():
 
     def _get_time_to_sleep(self):
         return abs(self.morning - self.now)
+
+
+if __name__ == "__main__":
+    d = Device()
+    while True:
+        d.display_heart(3)
+        # sleep(2)

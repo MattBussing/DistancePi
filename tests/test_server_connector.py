@@ -1,5 +1,6 @@
 # Author Matt Bussing
 from datetime import datetime, timedelta
+from time import sleep
 
 import pytz
 import requests
@@ -63,7 +64,9 @@ def test_get_messages_with_old_time():
     time_before = before - timedelta(days=2)
 
     sc.get_messages(temp, time_before=time_before)
-    assert temp.sort() == main_message_list.sort()
+    temp.sort()
+    main_message_list.sort()
+    assert temp == main_message_list
 
 
 def test_get_messages_with_time():
@@ -72,10 +75,11 @@ def test_get_messages_with_time():
         _post_message(post_data={'message': i, '_to': test})
     sc = ServerConnector(url, client)
     temp = []
+    sleep(1)
     before = datetime.now(tz=pytz.timezone("America/Denver"))
 
     # this makes it so that we see everthing from two nights ago on
     time_before = before - timedelta(days=2)
 
     sc.get_messages(temp, time_before=time_before)
-    assert temp.sort() == main_message_list.sort()
+    assert temp == []

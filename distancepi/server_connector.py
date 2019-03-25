@@ -33,7 +33,7 @@ class ServerConnector():
                     post_date = pytz.utc.localize(post_date, is_dst=None)
 
                     #  if time befoe is None we just add it to the list
-                    if time_before and post_date < time_before:
+                    if time_before is not None and post_date < time_before:
                         self._delete_messages(i['message'])
                         continue
 
