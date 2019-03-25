@@ -14,12 +14,12 @@ class ServerConnector():
         self.url = url
         self.client = client
 
-    def get_messages(self, message_list, time_before=None):
+    def get_messages(self, time_before=None):
         r = requests.get(url=self.url + self.client)
+        message_list = list()
 
         if(r.status_code == 200):
             # emptys the list
-            message_list = list()
             unparsed_message_list = r.json()['messages']
             # checks to see if anything passed
             if not(unparsed_message_list[0] == 'none'):
@@ -42,13 +42,7 @@ class ServerConnector():
 
         else:
             message_list = ["Server not working properly"]
+        return message_list
 
     def _delete_messages(self, message):
-        if self.verbose:
-            print("Deleting old message")
-        r = requests.delete(url=self.url + self.client,
-                            json={'message': message})
-
-        if(r.status_code == 200):
-            if self.verbose:
-                print(r.json()['message'])
+        requests.delete(url=self.url + self.client, json={'message': message})

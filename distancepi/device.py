@@ -225,18 +225,19 @@ class Device():
         if not self.on_computer:
             def pushed_up(event):
                 if event.action != 'released':
+                    print("pressed up")
                     # self.shutdown()
-                    self.item = (self.item + 1) % len(Device.colors)
+                    # self.item = (self.item + 1) % len(Device.colors)
                     # self.display_heart(1)
 
             def pushed_down(event):
                 if event.action != 'released':
                     print("pressed down")
-                    if self.item > 0:
-                        self.item -= 1
-                    else:
-                        self.item = len(Device.colors) - 1
-                    self.display_heart(1)
+                    # if self.item > 0:
+                    #     self.item -= 1
+                    # else:
+                    #     self.item = len(Device.colors) - 1
+                    # self.display_heart(1)
 
             def pushed_left(event):
                 if event.action != 'released':

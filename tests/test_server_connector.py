@@ -18,9 +18,20 @@ post_json = {'message': 'value', '_to': 'testing'}
 
 main_message_list = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
 
+messages_deleted = False
+
+
+def clean_up(need_to: bool = False):
+    global messages_deleted
+    if not messages_deleted or need_to:
+        messages_deleted = True
+        _delete_all_messages()
+        for i in main_message_list:
+            _post_message(post_data={'message': i, '_to': test})
+
 
 def _delete_message(del_data):
-    return requests.delete(url=del_url, json=del_data)
+    requests.delete(url=del_url, json=del_data)
 
 
 def _post_message(post_data):
@@ -42,37 +53,32 @@ def _delete_all_messages():
 
 
 def test_get_messages():
-    _delete_all_messages()
-    for i in main_message_list:
-        _post_message(post_data={'message': i, '_to': test})
+    clean_up()
     sc = ServerConnector(url, client)
-    temp = []
-    sc.get_messages(temp)
-    assert temp.sort() == main_message_list.sort()
-
-
-def test_get_messages_with_old_time():
-    _delete_all_messages()
-    for i in main_message_list:
-        _post_message(post_data={'message': i, '_to': test})
-    sc = ServerConnector(url, client)
-    temp = []
-    before = datetime.now(tz=pytz.timezone("America/Denver")).replace(
-        hour=22, minute=0, second=0, microsecond=0)
-
-    # this makes it so that we see everthing from two nights ago on
-    time_before = before - timedelta(days=2)
-
-    sc.get_messages(temp, time_before=time_before)
+    temp = sc.get_messages()
     temp.sort()
     main_message_list.sort()
     assert temp == main_message_list
 
 
+def test_get_messages_with_old_time():
+    clean_up()
+    sc = ServerConnector(url, client)
+    before = datetime.now(tz=pytz.timezone("America/Denver")).replace(
+        hour=22, minute=0, second=0, microsecond=0)
+
+    # this makes it so that we see everthing from two nights ago on
+    time_before = before
+
+    temp = sc.get_messages(time_before=time_before)
+    temp.sort()
+    main_message_list.sort()
+    assert temp == []
+    clean_up(True)
+
+
 def test_get_messages_with_time():
-    _delete_all_messages()
-    for i in main_message_list:
-        _post_message(post_data={'message': i, '_to': test})
+    clean_up()
     sc = ServerConnector(url, client)
     temp = []
     sleep(1)
@@ -81,5 +87,7 @@ def test_get_messages_with_time():
     # this makes it so that we see everthing from two nights ago on
     time_before = before - timedelta(days=2)
 
-    sc.get_messages(temp, time_before=time_before)
-    assert temp == []
+    temp = sc.get_messages(time_before=time_before)
+    temp.sort()
+    main_message_list.sort()
+    assert temp == main_message_list
