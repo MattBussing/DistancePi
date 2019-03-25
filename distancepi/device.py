@@ -10,8 +10,8 @@ from distancepi.view import View
 
 class Device():
     """
-    This class couples both the jobs of input from the sensehat or keyboard
-    and the View (sensehat or terminal)
+    This class represents the pi and sense_hat and deal with all the logic of
+    the program.
     """
 
     def __init__(self, user, on_computer=False, sleep_on=False):
@@ -23,6 +23,7 @@ class Device():
         self.on_computer = on_computer
         self.processes_stopped = True
         self.sleep_on = sleep_on
+        self.display_busy = False
 
         if not self.on_computer:
             from sense_hat import SenseHat
@@ -60,10 +61,14 @@ class Device():
             sleep(5)
 
     def display_helper(self, phrase):
+        while self.display_busy:
+            sleep(5)
+        self.display_busy = True
         if self.on_computer:
             print(phrase)
         else:
             self.sense_hat.show_message(phrase)
+        self.display_busy = False
 
     def stop_processes(self):
         # TODO: fix threads to make it so that you can pause and continue
