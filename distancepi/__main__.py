@@ -25,8 +25,9 @@ def get_config_loc(list):
     return config_loc
 
 
-def load_config():
-    config_loc = get_config_loc(sys.argv)
+def load_config(config_loc=None):
+    if config_loc is None:
+        config_loc = get_config_loc(sys.argv)
     # loads config file (config)s
     try:
         with open(config_loc, 'r') as f:

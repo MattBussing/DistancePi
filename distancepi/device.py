@@ -38,28 +38,13 @@ class Device():
             # i = 0
             while True:
                 self.time.update_times()
-
                 # if it is not during the time that someone wants a message
-                # Viewed, we put it to sleep
+                # displayed, we put it to sleep
                 if self.time.time_to_sleep and self.sleep_on:
-                    # if self.time.time_to_sleep and self.sleep_on \
-                    #         or self.test_sleep:
                     self._sleep()
                 # if we come out of sleep it is time to start the processes
                 if self.processes_stopped:
                     self.start_processes()
-
-                # this is for testing
-                # if self.tests:
-                #     sleep(1)
-                #     print("next", i)
-                #     if i > 3:
-                #         self.stop_processes()
-                #         return self.model.message_list
-                #     i += 1
-                #
-                # else:  # pauses for 30 seconds before restarting loop
-                #     sleep(30)
                 sleep(30)
         except KeyboardInterrupt:
             print('KeyboardInterrupt received. Exiting.')
@@ -141,27 +126,20 @@ class Device():
     def get_messages(self):
         self.model.message_list = self.sc.get_messages()
 
-    def _sleep(self):
+    def sleep(self):
         """ These are all the things we do when sleeping"""
         self.sense_hat.clear()
         self.stop_processes()
-
         # find the time to wake up
-        time_to_sleep = self._get_time_to_sleep()
-        if self.verbose:
-            print("going to sleep", time_to_sleep.total_seconds(),
-                  time_to_sleep)
-
+        time_to_sleep = self.time.get_time_to_sleep()
         # this is so you can test without waiting forever
-        if not self.tests:
-            sleep(time_to_sleep.total_seconds())  # sleeps until morning
-        else:
-            print("testing sleep")
-            sleep(0.01)
-            print("sleeping for", time_to_sleep.total_seconds(), time_to_sleep)
-
-    def _get_time_to_sleep(self):
-        return abs(self.morning - self.now)
+        # if not self.tests:
+        sleep(time_to_sleep.total_seconds())  # sleeps until morning
+        # else:
+        #     print("testing sleep")
+        #     sleep(0.01)
+        #     print("sleeping for", time_to_sleep.total_seconds(), time_to_slee
+        # p)
 
 
 if __name__ == "__main__":

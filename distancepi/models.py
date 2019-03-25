@@ -34,21 +34,31 @@ class User():
 class CurrentTime():
     def __init__(self, user):
         self.user = user
+        self._set_vars()
+
+    def _set_vars(self):
+        self.now = datetime.now(tz=timezone("America/Denver"))
+        self._new_day()
+
+    def _new_day(self):
+        self.morning = self.now.replace(
+            hour=self.user.morning_time, minute=0, second=0, microsecond=0)
+        self.evening = self.now.replace(
+            hour=self.user.evening_time, minute=0, second=0, microsecond=0)
+        # this makes it so that we see everthing from two nights ago on
+        self.time_before = self.evening - timedelta(days=2)
+
+    def _set_time_to_sleep(self):
+        self.time_to_sleep = not(
+            self.now < self.evening and self.now > self.morning)
 
     def update_times(self):
-        temp = datetime.now(tz=timezone("America/Denver"))
-
-        self.now = temp
+        self.now = datetime.now(tz=timezone("America/Denver"))
         # TODO: ADD THING TO MAKE THE TIME NOT UPDATE EVERYTIME
         new_day = True
         if new_day:
-            self.morning = self.now.replace(
-                hour=self.user.morning_time, minute=0, second=0, microsecond=0)
-            self.evening = self.now.replace(
-                hour=self.user.evening_time, minute=0, second=0, microsecond=0)
+            self._new_day()
+        self._set_time_to_sleep()
 
-            # this makes it so that we see everthing from two nights ago on
-            self.time_before = self.evening - timedelta(days=2)
-
-        self.time_to_sleep = not(
-            self.now < self.evening and self.now > self.morning)
+    def get_time_to_sleep(self):
+        return abs(self.morning - self.now)

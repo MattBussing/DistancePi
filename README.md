@@ -9,3 +9,8 @@ Install via `$(sudo) python3 -m pip install -e . --user`
 
 # Notes
  - This project assumes you are using a headless raspberry pi with sensehat. If you want to see the messages then run with onComputer=True
+
+## Helpful Commands
+- `sudo systemctl daemon-reload`
+- `sudo systemctl start DistancePi.service`
+- `journalctl -u DistancePi.service`
