@@ -1,7 +1,5 @@
 # author Matt Bussing
-import json
 import os
-import sys
 from datetime import datetime, timedelta
 from time import sleep
 
@@ -11,6 +9,7 @@ from distancepi.my_threads import Repeat
 
 
 class Device():
+
     green = (0, 255, 0)
     yellow = (255, 255, 0)
     blue = (0, 0, 255)
@@ -26,7 +25,6 @@ class Device():
         self.on_computer = on_computer
         self.sleep_on = sleep_on
         self.tests = tests
-        self.message_list = ["Messages not updated yet"]
         self.processes_stopped = True
 
         if tests:
