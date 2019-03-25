@@ -8,7 +8,7 @@ from distancepi.models import User
 
 def test_sleep_cycle():
     d = Device(user=User(
-        load_config("/home/pi/DistancePi/config/config.json")))
+        load_config("/home/pi/DistancePi/config/test_config.json")))
     d.start_processes()
     sleep(2)
     d.sleep(True)

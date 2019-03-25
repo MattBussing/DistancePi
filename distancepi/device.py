@@ -74,8 +74,6 @@ class Device():
         # TODO: fix threads to make it so that you can pause and continue
         self.processes['print'].stop()
         self.processes['get'].stop()
-        # if self.verbose:
-        # print("processes killed")
         if not self.on_computer:
             self.sense_hat.clear()
         self.processes_stopped = True
