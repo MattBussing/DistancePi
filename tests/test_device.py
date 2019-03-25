@@ -11,7 +11,7 @@ def test_sleep_cycle():
         load_config("/home/pi/DistancePi/config/config.json")))
     d.start_processes()
     sleep(2)
-    d.sleep()
+    d.sleep(True)
     d.start_processes()
     sleep(2)
     d.stop_processes()

@@ -126,20 +126,20 @@ class Device():
     def get_messages(self):
         self.model.message_list = self.sc.get_messages()
 
-    def sleep(self):
+    def sleep(self, testing=False):
         """ These are all the things we do when sleeping"""
         self.sense_hat.clear()
         self.stop_processes()
-        # find the time to wake up
+
+        # find the time to sleep
         time_to_sleep = self.time.get_time_to_sleep()
         # this is so you can test without waiting forever
-        # if not self.tests:
-        sleep(time_to_sleep.total_seconds())  # sleeps until morning
-        # else:
-        #     print("testing sleep")
-        #     sleep(0.01)
-        #     print("sleeping for", time_to_sleep.total_seconds(), time_to_slee
-        # p)
+        if not testing:
+            sleep(time_to_sleep.total_seconds())  # sleeps until morning
+        else:
+            print("testing sleep")
+            sleep(0.01)
+            print("sleeping for", time_to_sleep.total_seconds(), time_to_sleep)
 
 
 if __name__ == "__main__":
