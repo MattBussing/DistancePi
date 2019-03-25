@@ -1,11 +1,17 @@
 [Unit]
   Description=DistancePi start up at the beginning
-  After=multi-user.target
+  After=network.target
+  StartLimitIntervalSec=0
 
 [Service]
-  Type=idle
-  ExecStart=/bin/bash -c $HOME/DistancePi/start_up.sh
-  RemainAfterExit=yes
+  Type=simple
+  Restart=always
+  RestartSec=1
+  User=pi
+  ExecStart=/usr/bin/env bash /home/pi/DistancePi/start_up.sh
+
+[Install]
+  WantedBy=multi-user.target
 
 [Install]
   WantedBy=multi-user.target
