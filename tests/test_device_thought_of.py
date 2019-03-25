@@ -266,3 +266,139 @@ def test_add_thought_of_18():
     d.model.thought_of = 18
     heart = d.add_thought_of(heart)
     assert heart == goal
+
+
+def test_add_thought_of_63():
+    """
+    we want to start in the bottom right and work are way up
+    """
+    o = Device.nothing  # background
+    p = Device.red  # heart color
+
+    g = Device.orange
+
+    heart = [
+        o, o, o, o, o, o, o, o,
+        o, p, p, o, p, p, o, o,
+        p, p, p, p, p, p, p, o,
+        p, p, p, p, p, p, p, o,
+        o, p, p, p, p, p, o, o,
+        o, o, p, p, p, o, o, o,
+        o, o, o, p, o, o, o, o,
+        o, o, o, o, o, o, o, o,
+    ]
+    goal = [
+        o, o, o, o, o, o, o, o,
+        o, p, p, o, p, p, o, o,
+        p, p, p, p, p, p, p, o,
+        p, p, p, p, p, p, p, o,
+        o, p, p, p, p, p, o, o,
+        o, o, p, p, p, o, o, o,
+        o, o, o, p, o, o, o, o,
+        g, g, g, g, g, g, g, o
+    ]
+    d = Device()
+    d.model.thought_of = 63
+    heart = d.add_thought_of(heart)
+    assert heart == goal
+
+
+def test_add_thought_of_71():
+    """
+    we want to start in the bottom right and work are way up
+    """
+    o = Device.nothing  # background
+    p = Device.red  # heart color
+
+    g = Device.orange
+
+    heart = [
+        o, o, o, o, o, o, o, o,
+        o, p, p, o, p, p, o, o,
+        p, p, p, p, p, p, p, o,
+        p, p, p, p, p, p, p, o,
+        o, p, p, p, p, p, o, o,
+        o, o, p, p, p, o, o, o,
+        o, o, o, p, o, o, o, o,
+        o, o, o, o, o, o, o, o,
+    ]
+    goal = [
+        o, o, o, o, o, o, o, g,
+        o, p, p, o, p, p, o, g,
+        p, p, p, p, p, p, p, g,
+        p, p, p, p, p, p, p, g,
+        o, p, p, p, p, p, o, g,
+        o, o, p, p, p, o, o, g,
+        o, o, o, p, o, o, o, g,
+        g, g, g, g, g, g, g, g
+    ]
+    d = Device()
+    d.model.thought_of = 71
+    heart = d.add_thought_of(heart)
+    assert heart == goal
+
+
+def test_add_thought_of_72():
+    """
+    we want to start in the bottom right and work are way up
+    """
+    o = Device.nothing  # background
+    p = Device.red  # heart color
+
+    heart = [
+        o, o, o, o, o, o, o, o,
+        o, p, p, o, p, p, o, o,
+        p, p, p, p, p, p, p, o,
+        p, p, p, p, p, p, p, o,
+        o, p, p, p, p, p, o, o,
+        o, o, p, p, p, o, o, o,
+        o, o, o, p, o, o, o, o,
+        o, o, o, o, o, o, o, o,
+    ]
+    goal = [
+        o, o, o, o, o, o, o, o,
+        o, p, p, o, p, p, o, o,
+        p, p, p, p, p, p, p, o,
+        p, p, p, p, p, p, p, o,
+        o, p, p, p, p, p, o, o,
+        o, o, p, p, p, o, o, o,
+        o, o, o, p, o, o, o, o,
+        o, o, o, o, o, o, o, o,
+    ]
+    d = Device()
+    d.model.thought_of = 72
+    heart = d.add_thought_of(heart)
+    assert heart == goal
+
+
+def test_add_thought_of_73():
+    """
+    we want to start in the bottom right and work are way up
+    """
+    o = Device.nothing  # background
+    p = Device.red  # heart color
+
+    heart = [
+        o, o, o, o, o, o, o, o,
+        o, p, p, o, p, p, o, o,
+        p, p, p, p, p, p, p, o,
+        p, p, p, p, p, p, p, o,
+        o, p, p, p, p, p, o, o,
+        o, o, p, p, p, o, o, o,
+        o, o, o, p, o, o, o, o,
+        o, o, o, o, o, o, o, o,
+    ]
+    goal = [
+        o, o, o, o, o, o, o, o,
+        o, p, p, o, p, p, o, o,
+        p, p, p, p, p, p, p, o,
+        p, p, p, p, p, p, p, o,
+        o, p, p, p, p, p, o, o,
+        o, o, p, p, p, o, o, o,
+        o, o, o, p, o, o, o, o,
+        o, o, o, o, o, o, o, Device.green,
+    ]
+    d = Device()
+    d.model.thought_of = 73
+    heart = d.add_thought_of(heart)
+    assert heart == goal

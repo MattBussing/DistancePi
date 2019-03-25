@@ -20,9 +20,11 @@ class Device():
     blue = (0, 0, 255)
     red = (255, 0, 0)
     white = (255, 255, 255)
-    nothing = (0, 0, 0)
     pink = (255, 105, 180)
-    colors = [green, yellow, blue, red, white, pink]
+    purple = (128, 0, 128)
+    orange = (255, 165, 0)
+    colors = [green, yellow, blue, red, white, pink, purple, orange]
+    nothing = (0, 0, 0)
 
     def __init__(self, verbose=False, test_sleep=False,
                  on_computer=False, tests=False, sleep_on=False):
@@ -170,12 +172,13 @@ class Device():
              what about at a really large number?
 
         """
+        thought_of = self.model.thought_of % 72
         counter_color = Device.colors[int(
-            self.model.thought_of / 9) % len(self.colors)]
-        for i in range(0, self.model.thought_of % 9):
+            thought_of / 9) % len(self.colors)]
+        for i in range(0, thought_of % 9):
             heart[8 * (7 - i) + 7] = counter_color
 
-        for i in range(63 - int(self.model.thought_of / 9), 63):
+        for i in range(63 - int(thought_of / 9), 63):
             heart[i] = counter_color
         return heart
 
@@ -184,6 +187,7 @@ class Device():
             self.display_helper(i)
         if not self.on_computer:
             self.display_heart()
+            sleep(1)
 
     def display_helper(self, phrase):
         if self.on_computer:
