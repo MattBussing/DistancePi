@@ -1,7 +1,7 @@
 from threading import Event, Thread
 
 
-class Repeat(Thread):
+class RepeatedFunction(Thread):
     def __init__(self, delay, function, *args, **kwargs):
         Thread.__init__(self)
         self.abort = Event()
@@ -19,7 +19,7 @@ class Repeat(Thread):
             self.abort.wait(self.delay)
 
 
-class MyThread(Thread):
+class ParallelFunction(Thread):
     def __init__(self, function, *args, **kwargs):
         Thread.__init__(self)
         self.args = args

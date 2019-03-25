@@ -14,16 +14,17 @@ class ServerConnector():
         self.url = url
         self.client = client
 
-    def get_messages(self):
+    def get_messages(self, message_list, time_before=None):
         r = requests.get(url=self.url + self.client)
 
         if(r.status_code == 200):
             # emptys the list
-            self.message_list = []
-            message_list = r.json()['messages']
+            message_list = list()
+            unparsed_message_list = r.json()['messages']
             # checks to see if anything passed
-            if not(message_list[0] == 'none'):
-                for i in message_list:
+            if not(unparsed_message_list[0] == 'none'):
+                # here it deletes old messages and adds the new
+                for i in unparsed_message_list:
                     # returns the json string of date / time as a datetime
                     # object with timezone
                     # 2018-08-13T13:35:58.078103
@@ -31,15 +32,16 @@ class ServerConnector():
                         i['dateTime'], "%Y-%m-%dT%H:%M:%S.%f")
                     post_date = pytz.utc.localize(post_date, is_dst=None)
 
-                    if post_date < self.nightBefore:
+                    #  if time befoe is None we just add it to the list
+                    if time_before and post_date < time_before:
                         self._delete_messages(i['message'])
                         continue
 
                     # if it's not deleted, the message is added to the list
-                    self.message_list.append(i['message'])
+                    message_list.append(i['message'])
 
         else:
-            self.message_list = ["Server not working properly"]
+            message_list = ["Server not working properly"]
 
     def _delete_messages(self, message):
         if self.verbose:
@@ -50,5 +52,3 @@ class ServerConnector():
         if(r.status_code == 200):
             if self.verbose:
                 print(r.json()['message'])
-        else:
-            self.message_list = ["Server not working properly"]

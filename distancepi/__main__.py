@@ -1,13 +1,6 @@
 # author Matt Bussing
 import json
-import os
 import sys
-from datetime import datetime, timedelta
-from time import sleep
-
-import pytz
-
-from distancepi.my_threads import Repeat
 
 
 def get_args(list):
@@ -43,8 +36,9 @@ def load_config(self):
 
 
 def main():
-    d = Device(sleep_on=True)
-    d.main()
+    pass
+    # d = Device(sleep_on=True)
+    # d.main()
 
     # debug stuff
     # d = Device(sleep_on=True, on_computer=True)

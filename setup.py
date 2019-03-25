@@ -24,7 +24,9 @@ setup(
     packages=['distancepi'],
     python_requires='>=3.5, <4',
     install_requires=[
-        'pytest>=3.8'],
+        'pytest>=3.8',
+        'pytz',
+        'requests'],
 
     entry_points={
         'console_scripts': [

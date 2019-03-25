@@ -9,6 +9,10 @@ from distancepi.my_threads import Repeat
 
 
 class Device():
+    """
+    This class couples both the jobs of input from the sensehat or keyboard
+    and the display (sensehat or terminal)
+    """
 
     green = (0, 255, 0)
     yellow = (255, 255, 0)
@@ -166,7 +170,7 @@ class Device():
                 hour=self.eveningTime, minute=0, second=0, microsecond=0)
 
             # this makes it so that we see everthing from two nights ago on
-            self.nightBefore = self.evening - timedelta(days=2)
+            self.time_before = self.evening - timedelta(days=2)
 
         self.time_to_sleep = not(
             self.now < self.evening and self.now > self.morning)
