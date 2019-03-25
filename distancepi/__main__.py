@@ -3,10 +3,12 @@ import json
 import sys
 
 from distancepi.device import Device
+from distancepi.model import User
 
 
-def get_args(list):
+def get_config_loc(list):
     # this handles how we deal with the args passed into the system
+    # right now all it does is return the config location
     length = len(list)
     config_loc = None
     for i in range(1, length):
@@ -22,8 +24,8 @@ def get_args(list):
     return config_loc
 
 
-def load_config(self):
-    config_loc = get_args(sys.argv)
+def load_config():
+    config_loc = get_config_loc(sys.argv)
     # loads config file (config)s
     try:
         with open(config_loc, 'r') as f:
@@ -31,21 +33,9 @@ def load_config(self):
     except IOError:
         print("error missing config file")
         exit(-1)
-    self.morningTime = config['MORNING']
-    self.eveningTime = config['EVENING']
-    self.url = config['URL']
-    self.client = config['CLIENT']
-
-
-def main():
-    # pass
-    d = Device(sleep_on=True)
-    d.main()
-
-    # debug stuff
-    # d = Device(sleep_on=True, on_computer=True)
-    # d.display_heart()
+    return config
 
 
 if __name__ == '__main__':
-    main()
+    d = Device(user=User(load_config))
+    d.main()

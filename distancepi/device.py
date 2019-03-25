@@ -26,8 +26,9 @@ class Device():
     colors = [green, yellow, blue, red, white, pink, purple, orange]
     nothing = (0, 0, 0)
 
-    def __init__(self, verbose=False, test_sleep=False,
+    def __init__(self, user, verbose=False, test_sleep=False,
                  on_computer=False, tests=False, sleep_on=False):
+
         self.model = Model()
         self.verbose = verbose
         self.test_sleep = test_sleep

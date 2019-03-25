@@ -1,7 +1,7 @@
 # author Matt Bussing
 
 
-class Model():
+class Data():
     """
     This is the data that we are storing for this project.
     - message_list stores the messages we have received.
@@ -14,3 +14,15 @@ class Model():
     def __init__(self):
         self.message_list = ["Messages not updated yet"]
         self.thought_of = 0
+
+
+class User():
+    """
+    This stores a users preferences such as times it should be on
+    """
+
+    def __init__(self, config: dict):
+        self.morningTime = config['MORNING']
+        self.eveningTime = config['EVENING']
+        self.url = config['URL']
+        self.client = config['CLIENT']
