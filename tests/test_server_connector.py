@@ -55,7 +55,7 @@ def _delete_all_messages():
 def test_get_messages():
     clean_up()
     sc = ServerConnector(url, client)
-    temp = sc.get_messages()
+    temp = sc.get_data()[0]
     temp.sort()
     main_message_list.sort()
     assert temp == main_message_list

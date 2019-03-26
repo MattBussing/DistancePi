@@ -120,7 +120,9 @@ class Device():
             self.sense_hat.stick.direction_right = pushed_right
 
     def get_messages(self):
-        self.model.message_list = self.sc.get_messages()
+        data = self.sc.get_data()
+        self.model.message_list = data[0]
+        self.model.thought_of = data[1]
 
     def sleep(self, testing=False):
         """ These are all the things we do when sleeping"""
