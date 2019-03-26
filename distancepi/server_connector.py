@@ -17,7 +17,7 @@ class ServerConnector():
     def get_data(self, time_before=None):
         r = requests.get(url=self.url + self.client)
         message_list = list()
-        count = None
+        count = 0
         if(r.status_code == 200):
             data = r.json()
             count = data['count']
