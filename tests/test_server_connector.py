@@ -7,11 +7,8 @@ import requests
 
 from distancepi.server_connector import ServerConnector
 
-url = "https://distance-pi.herokuapp.com"
-# url = 'http://127.0.0.1:5000'
-
-test = "test"
-client = "/" + test
+url = "https://distance-pi.herokuapp.com/"
+client = "test"
 client_url = url + client
 del_url = client_url
 post_url = url + "/"
@@ -19,15 +16,10 @@ post_url = url + "/"
 thinking_of = "thinking-of"
 thinking_url = client_url + "/" + thinking_of
 
-del_json = {'message': 'value'}
-post_json = {'message': 'value', '_to': 'testing'}
-
 main_message_list = ['lol', 'sadfads', 'i hate lol', 'asdfasdfasdf']
 main_message_list.sort()
 
 messages_deleted = False
-
-new_count = 15
 
 
 def clean_up(need_to: bool = False):
@@ -36,7 +28,7 @@ def clean_up(need_to: bool = False):
         messages_deleted = True
         _delete_all_messages()
         for i in main_message_list:
-            _post_message(post_data={'message': i, '_to': test})
+            _post_message(post_data={'message': i, '_to': client})
 
 
 def _delete_message(del_data):
@@ -135,12 +127,12 @@ def test_count():
     assert 200 == requests.delete(url=thinking_url).status_code
     increment = 2
     _increaset_count(increment)
-    temp = sc.get_data(time_before=time_before)[1]
+    temp = sc.get_data()[1]
     assert increment == temp
     old = increment
     increment = 5
     _increaset_count(increment)
-    temp = sc.get_data(time_before=time_before)[1]
+    temp = sc.get_data()[1]
     assert old + increment == temp
 
 

@@ -31,7 +31,7 @@ class ServerConnector():
                     # object with timezone
                     # 2018-08-13T13:35:58.078103
                     post_date = datetime.strptime(
-                        i['dateTime'], "%Y-%m-%dT%H:%M:%S.%f")
+                        i['date_time'], "%Y-%m-%dT%H:%M:%S.%f")
                     post_date = pytz.utc.localize(post_date, is_dst=None)
 
                     #  if time befoe is None we just add it to the list
